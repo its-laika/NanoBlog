@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace NanoBlog.Attributes;
 
@@ -7,11 +8,7 @@ public class ValidFileName : ValidationAttribute
 {
     public override bool IsValid(object? value)
     {
-        if (value is not string fileName)
-        {
-            return false;
-        }
-
-        return !fileName.Contains('/') && !fileName.Contains("..");
+        return value is string fileName
+               && Regex.IsMatch(fileName, "^[A-Za-z0-9\\-]+\\.txt$");
     }
 }
