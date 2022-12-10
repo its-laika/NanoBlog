@@ -2,7 +2,12 @@ namespace NanoBlog.Services.FileStorages;
 
 public class ExportFileStorage : AbstractFileStorage, IExportFileStorage
 {
-    protected override string BaseFolder => "Export";
+    protected override string BaseFolder { get; }
+
+    public ExportFileStorage()
+    {
+        BaseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Export");
+    }
 
     public new async Task WriteContentAsync(string fileName, Stream content, CancellationToken cancellationToken)
     {

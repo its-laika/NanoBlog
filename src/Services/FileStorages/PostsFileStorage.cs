@@ -2,7 +2,12 @@ namespace NanoBlog.Services.FileStorages;
 
 public class PostsFileStorage : AbstractFileStorage, IPostsFileStorage
 {
-    protected override string BaseFolder => "BlogFiles/Posts";
+    protected override string BaseFolder { get; }
+
+    public PostsFileStorage()
+    {
+        BaseFolder = Path.Combine(Directory.GetCurrentDirectory(), "BlogFiles/Posts");
+    }
 
     public async Task<string> CreatePostFileAsync(Stream content, CancellationToken cancellationToken)
     {
@@ -23,7 +28,7 @@ public class PostsFileStorage : AbstractFileStorage, IPostsFileStorage
         {
             throw new FileNotFoundException();
         }
-        
+
         File.Delete(filePath);
     }
 }
