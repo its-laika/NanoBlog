@@ -3,19 +3,19 @@ services:
   nanoblog:
     image: nanoblog
     build:
-      dockerfile: Dockerfile
+      context: ../src
+      dockerfile: ../docker/Dockerfile
     env_file:
       - .env
     volumes:
-      - shared:/app/Export:rw
+      - ./export:/app/Export:rw
+      - ./blog-files:/app/BlogFiles:rw
   frontend:
     image: nginx:latest
     volumes:
       - ./docker-nginx.conf:/etc/nginx/nginx.conf:ro
-      - shared:/usr/share/nginx/html:ro
+      - ./export:/usr/share/nginx/html:ro
     ports:
       - "8080:8080"
     depends_on:
       - nanoblog
-volumes:
-  shared:

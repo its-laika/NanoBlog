@@ -1,0 +1,6 @@
+<p>
+    (C) curly, 2022
+</p>
+<script>
+    console.log('powered by: nano blog v0.0.1');
+</script>

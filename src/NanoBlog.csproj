@@ -35,7 +35,7 @@
         <None Update="BlogFiles\Posts\638062735132712350-715bad9a15dd41dc923f8755cb8b1bbd.txt">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Export\export.html">
+        <None Update="Export\index.html">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
