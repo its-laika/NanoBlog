@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog", "NanoBlog.csproj", "{AAE94257-BAF2-41C5-BA39-2772A8B2196F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog.Test", "..\test\NanoBlog.Test\NanoBlog.Test.csproj", "{CF82D4A8-682B-4158-B9EA-782BDDFE962B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{AAE94257-BAF2-41C5-BA39-2772A8B2196F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAE94257-BAF2-41C5-BA39-2772A8B2196F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAE94257-BAF2-41C5-BA39-2772A8B2196F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF82D4A8-682B-4158-B9EA-782BDDFE962B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF82D4A8-682B-4158-B9EA-782BDDFE962B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF82D4A8-682B-4158-B9EA-782BDDFE962B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF82D4A8-682B-4158-B9EA-782BDDFE962B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
