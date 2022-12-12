@@ -6,7 +6,6 @@ using NanoBlog.Services.FileStorages;
 namespace NanoBlog.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class ExportController : ControllerBase
 {
     private readonly IExportFileStorage _fileStorage;
@@ -24,7 +23,7 @@ public class ExportController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]
+    [HttpPost("export")]
     public async Task<IActionResult> Export(CancellationToken cancellationToken)
     {
         var generatedContent = await _blogGenerator.GenerateContentAsync(cancellationToken);

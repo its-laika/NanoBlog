@@ -5,7 +5,7 @@ using NanoBlog.Services.FileStorages;
 namespace NanoBlog.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("posts")]
 public class PostsController : ControllerBase
 {
     private readonly IPostsFileStorage _fileStorage;
