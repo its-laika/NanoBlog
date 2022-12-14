@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using NanoBlog.Services;
-using NanoBlog.Services.FileStorages;
+using NanoBlog.Services.FileStorages.Export;
 
 namespace NanoBlog.Controllers;
 
@@ -27,8 +27,9 @@ public class ExportController : ControllerBase
     public async Task<IActionResult> Export(CancellationToken cancellationToken)
     {
         var generatedContent = await _blogGenerator.GenerateContentAsync(cancellationToken);
+        
         var contentStream = new MemoryStream(Encoding.UTF8.GetBytes(generatedContent));
-        await _fileStorage.WriteContentAsync(IExportFileStorage.ExportFileName, contentStream, cancellationToken);
+        await _fileStorage.WriteContentAsync(contentStream, cancellationToken);
 
         _logger.LogInformation("Exported successfully");
         

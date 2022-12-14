@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NanoBlog.Attributes;
-using NanoBlog.Services.FileStorages;
+using NanoBlog.Services.FileStorages.Posts;
 
 namespace NanoBlog.Controllers;
 
@@ -30,10 +30,12 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
-        var fileName = await _fileStorage.CreatePostFileAsync(Request.Body, cancellationToken);
-        _logger.LogInformation("Post {fileName} has been created", fileName);
+        await using var fileStream = _fileStorage.Create();
+        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
 
-        return Created($"/posts/{fileName}", null);
+        _logger.LogInformation("Post {fileName} has been created", fileStream.Name);
+
+        return NoContent();
     }
 
     [HttpGet("{fileName}")]
@@ -42,12 +44,13 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (!_fileStorage.FileExists(fileName))
+        await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
+        if (fileStream is null)
         {
             return NotFound(fileName);
         }
 
-        var content = await _fileStorage.LoadContentAsync(fileName, cancellationToken);
+        var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
 
         return Ok(content);
     }
@@ -58,12 +61,13 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (!_fileStorage.FileExists(fileName))
+        await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
+        if (fileStream is null)
         {
             return NotFound(fileName);
         }
 
-        await _fileStorage.WriteContentAsync(fileName, Request.Body, cancellationToken);
+        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
         _logger.LogInformation("Post {fileName} has been updated", fileName);
 
         return NoContent();

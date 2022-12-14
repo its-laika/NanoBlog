@@ -1,6 +1,8 @@
 using NanoBlog.Attributes;
 using NanoBlog.Services;
-using NanoBlog.Services.FileStorages;
+using NanoBlog.Services.FileStorages.Export;
+using NanoBlog.Services.FileStorages.Posts;
+using NanoBlog.Services.FileStorages.Structure;
 
 var builder = WebApplication.CreateBuilder(args);
 

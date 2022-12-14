@@ -5,17 +5,16 @@ namespace NanoBlog.Services.FileStorages;
 public interface IFileStorage
 {
     IEnumerable<string> GetFileNames();
-
-    Task<string> LoadContentAsync(
-        [ValidFileName] string fileName,
-        CancellationToken cancellationToken
-    );
-
     bool FileExists([ValidFileName] string fileName);
 
-    Task WriteContentAsync(
-        [ValidFileName] string fileName,
-        Stream content,
-        CancellationToken cancellationToken
-    );
+    FileStream OpenReadStream([ValidFileName] string fileName);
+    FileStream? TryOpenReadStream([ValidFileName] string fileName);
+    FileStream? TryOpenWriteStream([ValidFileName] string fileName);
+
+    Task<string> LoadContentAsync(FileStream fileStream, CancellationToken cancellationToken);
+    Task WriteContentAsync(FileStream fileStream, Stream content, CancellationToken cancellationToken);
+
+    void Delete([ValidFileName] string fileName);
+
+    FileStream Create();
 }

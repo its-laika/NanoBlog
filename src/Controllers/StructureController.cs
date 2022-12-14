@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NanoBlog.Attributes;
-using NanoBlog.Services.FileStorages;
+using NanoBlog.Services.FileStorages.Structure;
 
 namespace NanoBlog.Controllers;
 
@@ -33,12 +33,13 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (!_fileStorage.FileExists(fileName))
+        await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
+        if (fileStream is null)
         {
             return NotFound(fileName);
         }
 
-        var content = await _fileStorage.LoadContentAsync(fileName, cancellationToken);
+        var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
         return Ok(content);
     }
 
@@ -48,12 +49,13 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (!_fileStorage.FileExists(fileName))
+        await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
+        if (fileStream is null)
         {
             return NotFound(fileName);
         }
 
-        await _fileStorage.WriteContentAsync(fileName, Request.Body, cancellationToken);
+        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
         _logger.LogInformation("Structure file {fileName} has been updated", fileName);
 
         return NoContent();

@@ -1,4 +1,4 @@
-namespace NanoBlog.Services.FileStorages;
+namespace NanoBlog.Services.FileStorages.Structure;
 
 public interface IStructureFileStorage : IFileStorage
 {
