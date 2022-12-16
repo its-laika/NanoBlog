@@ -1,3 +1,4 @@
+using System.Text;
 using FluentAssertions;
 using NanoBlog.Attributes;
 
@@ -27,5 +28,24 @@ public class IsValid
             .Should()
             .BeFalse();
         sut.IsValid("totally-harmless.exe").Should().BeFalse();
+    }
+
+    [Fact]
+    public void TestFileNameLength()
+    {
+        var stringBuilder = new StringBuilder();
+        for (var i = 0; i < 96; i++)
+        {
+            stringBuilder.Append('A');
+        }
+
+        stringBuilder.Append(".txt");
+
+        var validFileName = stringBuilder.ToString();
+        var invalidFileName = 'A' + stringBuilder.ToString();
+        
+        var sut = new ValidFileName();
+        sut.IsValid(validFileName).Should().BeTrue();
+        sut.IsValid(invalidFileName).Should().BeFalse();
     }
 }
