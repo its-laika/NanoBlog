@@ -70,6 +70,16 @@ public class OnActionExecuting
     }
 
     [Fact]
+    public void ShouldReturnUnauthorizedWithInvalidTokenCasing()
+    {
+        var context = BuildContext(_TOKEN_VALUE.ToUpper());
+
+        _sut.OnActionExecuting(context);
+
+        context.Result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    [Fact]
     public void ShouldReturnUnauthorizedWithMultipleHeaders()
     {
         var context = BuildContext(_TOKEN_VALUE);

@@ -1,16 +1,31 @@
+using System.Runtime.InteropServices;
 using NanoBlog.Attributes;
 using NanoBlog.Services;
+using NanoBlog.Services.FileStorages.Assets;
 using NanoBlog.Services.FileStorages.Export;
 using NanoBlog.Services.FileStorages.Posts;
 using NanoBlog.Services.FileStorages.Structure;
+using NanoBlog.Services.FileSystemSecurity;
+using NanoBlog.Services.MimeTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IAssetsFileStorage, AssetsFileStorage>();
+builder.Services.AddScoped<IBlogGenerator, BlogGenerator>();
+builder.Services.AddScoped<IExportFileStorage, ExportFileStorage>();
+builder.Services.AddScoped<IMimeTypeProvider, MimeTypeProvider>();
 builder.Services.AddScoped<IPostsFileStorage, PostsFileStorage>();
 builder.Services.AddScoped<IStructureFileStorage, StructureFileStorage>();
-builder.Services.AddScoped<IExportFileStorage, ExportFileStorage>();
-builder.Services.AddScoped<IBlogGenerator, BlogGenerator>();
+
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    builder.Services.AddScoped<IFileSystemSecurityService, WindowsFileSystemSecurityService>();
+}
+else
+{
+    builder.Services.AddScoped<IFileSystemSecurityService, UnixFileSystemSecurityService>();
+}
 
 builder.Services.AddControllers(options =>
 {
@@ -19,7 +34,7 @@ builder.Services.AddControllers(options =>
     {
         throw new Exception("Authentication token is not configured. Aborting.");
     }
-    
+
     options.Filters.Add(new AuthenticationActionFilter(authenticationToken));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

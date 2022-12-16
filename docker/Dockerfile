@@ -1,4 +1,4 @@
-﻿# This Dockerfile only works in .NET project root (../src) 
+﻿# This Dockerfile only works in .NET project root (../src/NanoBlog) 
 # As `docker compose` can handle this and for reasons of cleanliness, it's located in this subfolder.
 # If you want to use docker without compose, you may copy this file into the .NET project root.
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base

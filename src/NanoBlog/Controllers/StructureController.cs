@@ -29,7 +29,7 @@ public class StructureController : ControllerBase
 
     [HttpGet("{fileName}")]
     public async Task<IActionResult> GetFileContentAsync(
-        [ValidFileName] string fileName,
+        [ValidFileName.Text] string fileName,
         CancellationToken cancellationToken
     )
     {
@@ -45,7 +45,7 @@ public class StructureController : ControllerBase
 
     [HttpPut("{fileName}")]
     public async Task<IActionResult> UpdateFileContentAsync(
-        [ValidFileName] string fileName,
+        [ValidFileName.Text] string fileName,
         CancellationToken cancellationToken
     )
     {
@@ -55,7 +55,7 @@ public class StructureController : ControllerBase
             return NotFound(fileName);
         }
 
-        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
+        await Request.Body.CopyToAsync(fileStream, cancellationToken);
         _logger.LogInformation("Structure file {fileName} has been updated", fileName);
 
         return NoContent();

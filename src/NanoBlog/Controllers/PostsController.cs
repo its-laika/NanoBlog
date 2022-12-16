@@ -30,17 +30,18 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
-        await using var fileStream = _fileStorage.Create();
-        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
+        await using var fileStream = _fileStorage.CreateWriteStream();
+        await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        _logger.LogInformation("Post {fileName} has been created", fileStream.Name);
+        var fileName = Path.GetFileName(fileStream.Name);
+        _logger.LogInformation("Post {fileName} has been created", fileName);
 
-        return NoContent();
+        return CreatedAtAction("GetFileContent", new { fileName }, null);
     }
 
     [HttpGet("{fileName}")]
     public async Task<IActionResult> GetFileContentAsync(
-        [ValidFileName] string fileName,
+        [ValidFileName.Text] string fileName,
         CancellationToken cancellationToken
     )
     {
@@ -57,7 +58,7 @@ public class PostsController : ControllerBase
 
     [HttpPut("{fileName}")]
     public async Task<IActionResult> UpdateFileContentAsync(
-        [ValidFileName] string fileName,
+        [ValidFileName.Text] string fileName,
         CancellationToken cancellationToken
     )
     {
@@ -67,14 +68,14 @@ public class PostsController : ControllerBase
             return NotFound(fileName);
         }
 
-        await _fileStorage.WriteContentAsync(fileStream, Request.Body, cancellationToken);
+        await Request.Body.CopyToAsync(fileStream, cancellationToken);
         _logger.LogInformation("Post {fileName} has been updated", fileName);
 
         return NoContent();
     }
 
     [HttpDelete("{fileName}")]
-    public IActionResult DeleteFileAsync([ValidFileName] string fileName)
+    public IActionResult DeleteFileAsync([ValidFileName.Text] string fileName)
     {
         if (!_fileStorage.FileExists(fileName))
         {
