@@ -8,4 +8,4 @@ _ReSharper.Caches/
 .env
 .DS_Store
 .vscode/
-.Dotsettings.user
+*.Dot[sS]ettings.user
