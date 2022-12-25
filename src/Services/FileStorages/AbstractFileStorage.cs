@@ -84,7 +84,7 @@ public abstract class AbstractFileStorage : IFileStorage
     {
         var filePath = Path.Combine(BaseFolder, fileName);
 
-        if (!File.Exists(fileName))
+        if (!File.Exists(filePath))
         {
             throw new FileNotFoundException();
         }
