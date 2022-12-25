@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>curly's nano blog v0.0.1</title>
+<title>neon-js' nano blog v0.0.2</title>
 <style>
     html {
         font-family: monospace;

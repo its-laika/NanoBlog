@@ -1,1 +1,1 @@
-<h1>Welcome to curly's nano blog (v0.0.1)!</h1>
+<h1>Welcome to neon-js' nano blog (v0.0.2)!</h1>
