@@ -51,5 +51,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.UsePathBase(new PathString("/api"));
 
 app.Run();
