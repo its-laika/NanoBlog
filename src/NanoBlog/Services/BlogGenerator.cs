@@ -1,12 +1,16 @@
+using System.Text.RegularExpressions;
 using NanoBlog.Services.FileStorages.Posts;
 using NanoBlog.Services.FileStorages.Structure;
 
 namespace NanoBlog.Services;
 
-public class BlogGenerator : IBlogGenerator
+public partial class BlogGenerator : IBlogGenerator
 {
     private readonly IPostsFileStorage _postsFileStorage;
     private readonly IStructureFileStorage _structureFileStorage;
+   
+    [GeneratedRegex("\\s{2,}")]
+    private static partial Regex ReduceSpacingRegex();
 
     public BlogGenerator(IPostsFileStorage postsFileStorage, IStructureFileStorage structureFileStorage)
     {
@@ -28,7 +32,7 @@ public class BlogGenerator : IBlogGenerator
         var contentFooter = await _structureFileStorage.LoadContentAsync(contentFooterFileHandle, cancellationToken);
 
         var posts = new List<string>();
-        foreach (var postFileName in _postsFileStorage.GetFileNames().Order())
+        foreach (var postFileName in _postsFileStorage.GetFileNames().OrderDescending())
         {
             await using var postFileHandle = _postsFileStorage.OpenReadStream(postFileName);
             var post = await _postsFileStorage.LoadContentAsync(postFileHandle, cancellationToken);
@@ -37,19 +41,22 @@ public class BlogGenerator : IBlogGenerator
 
         var postList = string.Join(' ', posts.Select(post => $@"<div class='post'>{post}</div>"));
 
-        return $@"
-            <html>
-                <head>
-                    {htmlHeader}
-                </head>
-                <body>
-                    {contentHeader}
-                    <div id='posts'>
-                        {postList}
-                    </div>
-                    {contentFooter}
-                </body>
-            </html>
-        ";
+        return ReduceSpacingRegex().Replace(
+            $@"
+                <html>
+                    <head>
+                        {htmlHeader}
+                    </head>
+                    <body>
+                        {contentHeader}
+                        <div id='posts'>
+                            {postList}
+                        </div>
+                        {contentFooter}
+                    </body>
+                </html>
+            ",
+            " "
+        );
     }
 }
