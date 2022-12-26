@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
@@ -24,7 +25,7 @@ public class OnActionExecuting
     {
         var context = BuildContext($"Bearer {_TOKEN_VALUE}");
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeNull();
     }
@@ -34,7 +35,7 @@ public class OnActionExecuting
     {
         var context = BuildContext($"Bearer    {_TOKEN_VALUE}");
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeNull();
     }
@@ -44,7 +45,7 @@ public class OnActionExecuting
     {
         var context = BuildContext($"BEArEr {_TOKEN_VALUE}");
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeNull();
     }
@@ -54,7 +55,7 @@ public class OnActionExecuting
     {
         var context = BuildContext(null);
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeOfType<UnauthorizedResult>();
     }
@@ -64,7 +65,7 @@ public class OnActionExecuting
     {
         var context = BuildContext("somethingElse");
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeOfType<UnauthorizedResult>();
     }
@@ -74,7 +75,7 @@ public class OnActionExecuting
     {
         var context = BuildContext(_TOKEN_VALUE.ToUpper());
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeOfType<UnauthorizedResult>();
     }
@@ -85,12 +86,12 @@ public class OnActionExecuting
         var context = BuildContext(_TOKEN_VALUE);
         context.HttpContext.Request.Headers.Authorization = new StringValues(new[] { _TOKEN_VALUE, "something else" });
 
-        _sut.OnActionExecuting(context);
+        _sut.OnResourceExecuting(context);
 
         context.Result.Should().BeOfType<UnauthorizedResult>();
     }
 
-    private static ActionExecutingContext BuildContext(string? authenticationToken)
+    private static ResourceExecutingContext BuildContext(string? authenticationToken)
     {
         var httpContext = new DefaultHttpContext();
 
@@ -99,7 +100,7 @@ public class OnActionExecuting
             httpContext.Request.Headers.Add(HeaderNames.Authorization, new StringValues(authenticationToken));
         }
 
-        var actionExecutedContext = new ActionExecutingContext(
+        var actionExecutedContext = new ResourceExecutingContext(
             new ActionContext
             {
                 HttpContext = httpContext,
@@ -107,8 +108,7 @@ public class OnActionExecuting
                 ActionDescriptor = new ActionDescriptor()
             },
             new List<IFilterMetadata>(),
-            new Dictionary<string, object?> { { string.Empty, null } },
-            new { }
+            new List<IValueProviderFactory>()
         );
 
         return actionExecutedContext;

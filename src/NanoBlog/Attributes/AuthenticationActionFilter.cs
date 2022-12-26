@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace NanoBlog.Attributes;
 
-public class AuthenticationActionFilter : IActionFilter
+public class AuthenticationActionFilter : IResourceFilter
 {
     private const string _AUTHENTICATION_HEADER_BEARER_PREFIX = "Bearer ";
 
@@ -14,7 +14,7 @@ public class AuthenticationActionFilter : IActionFilter
         _configuredAuthenticationToken = configuredAuthenticationToken;
     }
 
-    public void OnActionExecuting(ActionExecutingContext context)
+    public void OnResourceExecuting(ResourceExecutingContext context)
     {
         var requestHeaders = context.HttpContext.Request.Headers;
         if (requestHeaders.Authorization is not [{ } token])
@@ -37,7 +37,7 @@ public class AuthenticationActionFilter : IActionFilter
         }
     }
 
-    public void OnActionExecuted(ActionExecutedContext context)
+    public void OnResourceExecuted(ResourceExecutedContext context)
     {
     }
 }
