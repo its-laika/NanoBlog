@@ -32,7 +32,7 @@ public partial class BlogGenerator : IBlogGenerator
         var contentFooter = await _structureFileStorage.LoadContentAsync(contentFooterFileHandle, cancellationToken);
 
         var posts = new List<string>();
-        foreach (var postFileName in _postsFileStorage.GetFileNames().OrderDescending())
+        foreach (var postFileName in _postsFileStorage.GetFileNames())
         {
             await using var postFileHandle = _postsFileStorage.OpenReadStream(postFileName);
             var post = await _postsFileStorage.LoadContentAsync(postFileHandle, cancellationToken);
@@ -43,6 +43,7 @@ public partial class BlogGenerator : IBlogGenerator
 
         return ReduceSpacingRegex().Replace(
             $@"
+                <!DOCTYPE html>
                 <html>
                     <head>
                         {htmlHeader}
