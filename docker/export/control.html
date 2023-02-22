@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NanoBlog - Administration</title>
+    <style>
+        html {
+            padding: 5%;
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            color: #e8eaed;
+            background: #202124;
+            font-family: sans-serif;
+            font-weight: 200;
+        }
+
+        fieldset {
+            padding: 2% 0;
+            border: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            align-content: stretch;
+            align-items: stretch;
+        }
+
+        #presets {
+            height: 7%;
+            min-height: 50px;
+            gap: 1%;
+        }
+
+        #presets input {
+            width: 24%;
+            height: 100%;
+            min-height: 100%;
+        }
+
+        #method {
+            height: 10%;
+            width: 50%;
+            padding-bottom: 0;
+        }
+
+        #method div {
+            height: 100%;
+            width: 25%;
+            display: flex;
+        }
+
+        #method div input {
+            margin-right: 5%;
+            ;
+        }
+
+        form {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        form>input {
+            padding: 0;
+            height: 5%;
+            min-height: 30px;
+        }
+
+        form>input[type=submit] {
+            min-height: 7%;
+        }
+
+        form * {
+            margin: 1% 0;
+        }
+
+        textarea {
+            font-family: monospace;
+            font-size: larger;
+        }
+
+        #type {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #type input {
+            margin: 0 10px;
+        }
+
+        #preview {
+            width: 100%;
+            height: 10vh;
+        }
+
+        input {
+            text-indent: 10px;
+        }
+
+        textarea {
+            padding: 1%;
+        }
+
+        input,
+        textarea {
+            background: #2b2d31;
+            color: #e8eaed;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 300;
+            margin-bottom: 5%;
+        }
+
+        .loading-hint {
+            position: fixed;
+            top: 10%;
+            left: 75%;
+            width: 20%;
+            text-align: center;
+            border: 10px solid rgb(237, 56, 56);
+            background: rgb(237, 56, 56);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>NanoBlog - Administration</h1>
+    <fieldset id="presets">
+        <legend>Shortcuts</legend>
+        <input type="button" preset-method="POST" preset-endpoint="posts" value="New post">
+        <input type="button" preset-method="GET" preset-endpoint="posts" value="List posts">
+        <input type="button" preset-method="GET" preset-endpoint="preview" value="Raw preview">
+        <input type="button" preset-method="POST" preset-endpoint="export" value="Export">
+    </fieldset>
+    <form>
+        <fieldset id="method">
+            <legend>HTTP Method</legend>
+            <div><input type="radio" value="POST" id="post"><label for="post">POST</label></div>
+            <div><input type="radio" value="PUT" id="put"> <label for="put">PUT</label></div>
+            <div><input type="radio" value="GET" id="get"> <label for="get">GET</label></div>
+            <div><input type="radio" value="DELETE" id="delete"> <label for="delete">DELETE</label></div>
+        </fieldset>
+        <input id="token" type="password" placeholder="Authentication Token" required>
+        <input id="resource" type="url" placeholder="Resource" required>
+        <textarea id="payload" rows="20" placeholder="Payload"></textarea>
+        <input type="submit">
+    </form>
+</body>
+<script>
+    const payloadElement = document.querySelector('#payload');
+    const tokenElement = document.querySelector('#token');
+    const resourceElement = document.querySelector('#resource');
+    const methodElements = document.querySelectorAll('#method input');
+    const formElement = document.querySelector('form');
+    const presetElements = document.querySelectorAll('#presets input');
+
+    const baseApi = location.origin + '/api/';
+
+    resourceElement.value = baseApi;
+    methodElements[0].checked = true;
+
+    methodElements.forEach(element => element.onchange = _ => {
+        Array.from(methodElements)
+            .filter(other => other !== element)
+            .map(other => other.checked = false);
+
+        payloadElement.readOnly = !['POST', 'PUT'].includes(element.value);
+    });
+
+    presetElements.forEach(element => element.onclick = _ => {
+        Array.from(methodElements)
+            .map(other => other.checked = other.value === element.attributes["preset-method"].value);
+        resourceElement.value = baseApi + element.attributes["preset-endpoint"].value;
+    });
+
+    formElement.onsubmit = e => {
+        e.preventDefault();
+
+        const httpMethod = Array.from(methodElements)
+            .filter(e => e.checked)
+            .map(e => e.value)[0];
+
+        const resource = resourceElement.value;
+
+        const payload = ['POST', 'PUT'].includes(httpMethod)
+            ? payloadElement.value
+            : undefined;
+
+        const token = tokenElement.value;
+
+        const headers = new Headers();
+        if (!!token) {
+            headers.append('Authorization', 'Bearer ' + token);
+        }
+
+        const config = {
+            method: httpMethod,
+            headers,
+            cache: 'reload',
+            redirect: 'follow',
+            body: payload
+        };
+
+        const request = new Request(resource);
+
+        const loadingElement = document.createElement('span');
+        loadingElement.classList.add('loading-hint');
+        loadingElement.innerText = 'Loading...';
+        document.querySelector('body').appendChild(loadingElement);
+
+        fetch(request, config)
+            .then(response => response.text())
+            .then(value => payloadElement.value = value)
+            .catch(error => payloadElement.value = error)
+            .then(_ => loadingElement.remove());
+    }
+</script>
+
+</html>
