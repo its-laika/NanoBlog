@@ -1,4 +1,4 @@
-# NanoBlog _[wip]_
+# NanoBlog
 A simplistic blogging system
 
 ## About 
@@ -29,7 +29,6 @@ The resulting file will be exported into _Export/index.html_.
 _Coming soon!_
 
 ## Setup
-**DO NOT USE IN PRODUCTION! THIS PROJECT IS CURRENTLY BEING DEVELOPED AND TESTED BY ME!**
 
 ### Docker
 - `cd docker/`
@@ -44,8 +43,7 @@ _Coming soon!_
 - `dotnet run .` or `dotnet test .`
 
 ## Issues, help or security related stuff
-If you want to give me any relevant information to this project, feel free to either create an issue or write me an e-mail: novembermikefive /at/ gmail.com .
-But again: **DO NOT USE IN PRODUCTION! THIS PROJECT IS CURRENTLY BEING DEVELOPED AND TESTED BY ME!**
+If you want to give me any relevant information to this project, feel free to either create an issue or write me an e-mail: github+curly /at/ likely /dot/ gay.
 
 ## License
 MIT
