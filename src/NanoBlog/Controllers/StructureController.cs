@@ -36,11 +36,11 @@ public class StructureController : ControllerBase
         await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
         if (fileStream is null)
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
-        return Ok(content);
+        return Content(content, "text/html");
     }
 
     [HttpPut("{fileName}")]
@@ -52,7 +52,7 @@ public class StructureController : ControllerBase
         await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
         if (fileStream is null)
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);

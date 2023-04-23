@@ -39,13 +39,13 @@ public class ExportController : ControllerBase
         await _assetsFileStorage.TransferAsync(cancellationToken);
         _logger.LogInformation("Transferred assets successfully");
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("preview")]
     public async Task<IActionResult> GetPreview(CancellationToken cancellationToken)
     {
         var generatedContent = await _blogGenerator.GenerateContentAsync(cancellationToken);
-        return Ok(generatedContent);
+        return Content(generatedContent, "text/html");
     }
 }

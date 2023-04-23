@@ -48,12 +48,11 @@ public class PostsController : ControllerBase
         await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
         if (fileStream is null)
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
-
-        return Ok(content);
+        return Content(content, "text/html");
     }
 
     [HttpPut("{fileName}")]
@@ -65,7 +64,7 @@ public class PostsController : ControllerBase
         await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
         if (fileStream is null)
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
@@ -79,7 +78,7 @@ public class PostsController : ControllerBase
     {
         if (!_fileStorage.FileExists(fileName))
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         _fileStorage.Delete(fileName);

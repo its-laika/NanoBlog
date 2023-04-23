@@ -10,7 +10,6 @@ using NanoBlog.Services.MimeTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddScoped<IAssetsFileStorage, AssetsFileStorage>();
 builder.Services.AddScoped<IBlogGenerator, BlogGenerator>();
 builder.Services.AddScoped<IExportFileStorage, ExportFileStorage>();
@@ -37,18 +36,8 @@ builder.Services.AddControllers(options =>
 
     options.Filters.Add(new AuthenticationActionFilter(authenticationToken));
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapControllers();
 app.UsePathBase(new PathString("/api"));

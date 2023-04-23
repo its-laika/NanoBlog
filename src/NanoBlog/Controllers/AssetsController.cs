@@ -44,7 +44,7 @@ public class AssetsController : ControllerBase
 
         if (await _mimeTypeProvider.ProvideMimeTypeAsync(file, content, cancellationToken) is not { } mimeType)
         {
-            return BadRequest("Could not determine MIME type of file");
+            return BadRequest();
         }
 
         await using var fileStream = _fileStorage.CreateWriteStream(mimeType);
@@ -65,7 +65,7 @@ public class AssetsController : ControllerBase
         await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
         if (fileStream is null)
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         var mimeType = await _mimeTypeProvider.ProvideMimeTypeAsync(fileStream.Name, fileStream, cancellationToken)
@@ -93,14 +93,14 @@ public class AssetsController : ControllerBase
 
         if (await _mimeTypeProvider.ProvideMimeTypeAsync(file, content, cancellationToken) is not { } uploadMimeType)
         {
-            return BadRequest("Could not determine MIME type of file");
+            return BadRequest();
         }
 
         await using (var fileReadStream = _fileStorage.TryOpenReadStream(fileName))
         {
             if (fileReadStream is null)
             {
-                return NotFound(fileName);
+                return NotFound();
             }
 
             var storedFileMimeType = await _mimeTypeProvider.ProvideMimeTypeAsync(
@@ -111,7 +111,7 @@ public class AssetsController : ControllerBase
 
             if (storedFileMimeType != uploadMimeType)
             {
-                return BadRequest("MIME types do not match");
+                return BadRequest();
             }
         }
 
@@ -128,7 +128,7 @@ public class AssetsController : ControllerBase
     {
         if (!_fileStorage.FileExists(fileName))
         {
-            return NotFound(fileName);
+            return NotFound();
         }
 
         _fileStorage.Delete(fileName);
