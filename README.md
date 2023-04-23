@@ -26,7 +26,7 @@ The resulting file will be exported into _Export/index.html_.
   **Make sure to use a long and secure token! Also make sure that possible brute forcing is prevented by firewall, IPS and rate limiting!**
 
 ### API
-see [Swagger documentation](https://github.com/neon-JS/openapi.yaml)
+see [Swagger documentation](https://github.com/neon-JS/NanoBlog/blob/main/openapi.yaml)
 
 ## Setup
 
