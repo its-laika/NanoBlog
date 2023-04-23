@@ -20,7 +20,7 @@ public partial class ValidFileName : ValidationAttribute
         }
     }
 
-    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif)$")]
+    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif|svg)$")]
     private static partial Regex AssetRegex();
 
     [GeneratedRegex("^[A-Za-z0-9\\-]+\\.txt$")]

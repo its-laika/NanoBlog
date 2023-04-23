@@ -14,6 +14,7 @@ public class IsValid
         sut.IsValid("a-normal-file.jpg").Should().BeTrue();
         sut.IsValid("a-normal-file.jpeg").Should().BeTrue();
         sut.IsValid("a-normal-file.gif").Should().BeTrue();
+        sut.IsValid("a-normal-file.svg").Should().BeTrue();
     }
     
     [Fact]

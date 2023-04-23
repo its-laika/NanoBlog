@@ -10,6 +10,7 @@ public class MimeTypeProvider : IMimeTypeProvider
             (new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }, MimeType.Png, "png"),
             ("GIF87a"u8.ToArray(), MimeType.Gif, "gif"),
             ("GIF89a"u8.ToArray(), MimeType.Gif, "gif"),
+            ("<?xml"u8.ToArray(), MimeType.Svg, "svg"),
         };
 
     public async Task<MimeType?> ProvideMimeTypeAsync(
