@@ -29,8 +29,7 @@ public abstract class AbstractFileStorage : IFileStorage
 
         return BaseFolder
             .EnumerateFiles()
-            .Select(f => f.Name)
-            .OrderDescending();
+            .Select(f => f.Name);
     }
 
     public bool FileExists(string fileName)
