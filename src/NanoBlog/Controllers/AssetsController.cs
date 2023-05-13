@@ -27,7 +27,10 @@ public class AssetsController : ControllerBase
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _fileStorage.GetFileNames();
+        var fileNames = _fileStorage
+            .GetFileNames()
+            .OrderDescending();
+
         return Ok(fileNames);
     }
 

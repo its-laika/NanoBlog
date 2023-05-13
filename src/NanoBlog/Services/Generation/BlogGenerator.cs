@@ -39,6 +39,7 @@ public partial class BlogGenerator : IBlogGenerator
             : new List<IEnumerable<string>> { fileContents.Posts };
 
         return chunks
+            .Select(posts => posts.Reverse())
             .Select((posts, index) => GenerateContent(fileContents.WithPosts(posts), index, chunks.Count))
             .Select(Encoding.UTF8.GetBytes)
             .Select(bytes => new MemoryStream(bytes))
@@ -134,6 +135,7 @@ public partial class BlogGenerator : IBlogGenerator
         var postsFiles = await Task.WhenAll(
             _postsFileStorage
                 .GetFileNames()
+                .Order()
                 .Select(async fileName =>
                 {
                     await using var stream = _postsFileStorage.OpenReadStream(fileName);
