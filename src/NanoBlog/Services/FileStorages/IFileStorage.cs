@@ -10,7 +10,7 @@ public interface IFileStorage
     FileStream? TryOpenWriteStream(string fileName);
 
     Task<string> LoadContentAsync(FileStream fileStream, CancellationToken cancellationToken);
-   
+
     void Delete(string fileName);
 
     FileStream CreateWriteStream();

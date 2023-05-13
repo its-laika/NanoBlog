@@ -13,7 +13,7 @@ public class IsValid
         sut.IsValid("a-normal-file.txt").Should().BeTrue();
         sut.IsValid("THIS-is--1-tEsT.txt").Should().BeTrue();
     }
-    
+
     [Fact]
     public void TestInvalidFileName()
     {
@@ -42,7 +42,7 @@ public class IsValid
 
         var validFileName = stringBuilder.ToString();
         var invalidFileName = 'A' + stringBuilder.ToString();
-        
+
         var sut = new NanoBlog.Attributes.ValidFileName.Text();
         sut.IsValid(validFileName).Should().BeTrue();
         sut.IsValid(invalidFileName).Should().BeFalse();

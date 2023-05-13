@@ -13,10 +13,10 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
-        
+
         result.Should().Be(MimeType.Gif);
     }
-    
+
     [Fact]
     public async Task TestMimeTypeMismatch()
     {
@@ -25,10 +25,10 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
-        
+
         result.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task TestMissingFileExtension()
     {
@@ -37,10 +37,10 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
-        
+
         result.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task TestMissingContentSignature()
     {
@@ -49,10 +49,10 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
-        
+
         result.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task TestTooShortContent()
     {
@@ -61,10 +61,10 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
-        
+
         result.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task TestMultipleExtensions()
     {
@@ -73,7 +73,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var resultJpg = await sut.ProvideMimeTypeAsync("test.jpg", fileStream, CancellationToken.None);
         resultJpg.Should().Be(MimeType.Jpeg);
-        
+
         var resultJpeg = await sut.ProvideMimeTypeAsync("test.jpeg", fileStream, CancellationToken.None);
         resultJpeg.Should().Be(MimeType.Jpeg);
     }
