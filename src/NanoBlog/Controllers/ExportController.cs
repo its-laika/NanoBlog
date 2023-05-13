@@ -1,6 +1,5 @@
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using NanoBlog.Services;
+using NanoBlog.Services.Generation;
 using NanoBlog.Services.FileStorages.Assets;
 using NanoBlog.Services.FileStorages.Export;
 
@@ -30,22 +29,19 @@ public class ExportController : ControllerBase
     [HttpPost("export")]
     public async Task<IActionResult> Export(CancellationToken cancellationToken)
     {
-        var generatedContent = await _blogGenerator.GenerateContentAsync(cancellationToken);
+        var pageMapping = await _blogGenerator.GeneratePageMappingAsync(cancellationToken);
 
-        var contentStream = new MemoryStream(Encoding.UTF8.GetBytes(generatedContent));
-        await _exportFileStorage.WriteContentAsync(contentStream, cancellationToken);
+        await _assetsFileStorage.SynchronizeFilesAsync(cancellationToken);
+        await _exportFileStorage.WriteContentsAsync(pageMapping, cancellationToken);
+
         _logger.LogInformation("Exported successfully");
-
-        await _assetsFileStorage.TransferAsync(cancellationToken);
-        _logger.LogInformation("Transferred assets successfully");
-
         return NoContent();
     }
 
     [HttpGet("preview")]
     public async Task<IActionResult> GetPreview(CancellationToken cancellationToken)
     {
-        var generatedContent = await _blogGenerator.GenerateContentAsync(cancellationToken);
+        var generatedContent = await _blogGenerator.GeneratePreviewAsync(cancellationToken);
         return Content(generatedContent, "text/html");
     }
 }

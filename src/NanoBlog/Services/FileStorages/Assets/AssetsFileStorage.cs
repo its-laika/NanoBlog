@@ -48,7 +48,7 @@ public class AssetsFileStorage : AbstractFileStorage, IAssetsFileStorage
         return fileStream;
     }
 
-    public async Task TransferAsync(CancellationToken cancellationToken)
+    public async Task SynchronizeFilesAsync(CancellationToken cancellationToken)
     {
         BaseFolder.Refresh();
 

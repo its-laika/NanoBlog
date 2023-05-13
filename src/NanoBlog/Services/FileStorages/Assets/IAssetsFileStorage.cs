@@ -7,5 +7,5 @@ public interface IAssetsFileStorage : IFileStorage
     FileStream OpenWriteStream(string fileName);
     new Task<byte[]> LoadContentAsync(FileStream fileStream, CancellationToken cancellationToken);
     FileStream CreateWriteStream(MimeType mimeType);
-    Task TransferAsync(CancellationToken cancellationToken);
+    Task SynchronizeFilesAsync(CancellationToken cancellationToken);
 }
