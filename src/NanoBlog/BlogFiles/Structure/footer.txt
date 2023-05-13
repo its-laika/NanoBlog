@@ -1,6 +1,3 @@
-<p>
-    (C) neon-js, 2023
-</p>
 <script>
-    console.log('powered by: nano blog v0.0.4');
+    console.log('powered by: nano blog');
 </script>
