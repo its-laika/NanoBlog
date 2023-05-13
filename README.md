@@ -8,7 +8,7 @@ This is achived in 3 steps:
 1. Creating, reading, updating or deleting all content via API and storing them as files. 
 This allows us to configure the blog either completely via API or partly on the filesystem itself.  
 Content files are separated into three folders:
-  - _BlogFiles/Structure_, which contains the HTML header (_html-header.txt_), content header (_header.txt_) and footer (_footer.txt_).
+  - _BlogFiles/Structure_, which contains defined files that build the core structure (see _Details_).
   Those files always exist for a blog and can be updated (though not be deleted) via API.
   - _BlogFiles/Posts_, which contains all posts that were created. Post files are named automatically so that they're sortable 
   by creation date. In contrast to structure files, posts can also be deleted.
@@ -27,6 +27,26 @@ The resulting file will be exported into _Export/index.html_.
 
 ### API
 see [Swagger documentation](https://github.com/neon-JS/NanoBlog/blob/main/openapi.yaml)
+
+### CSS selectors
+Selector|Type|Description
+-|-|-
+`#posts`|`div`|Identifies the posts container
+`.post`|`div`|Identifies one post
+`#pagination`|`nav`|Identifies the pagination container
+`.pagination-link`|`li`|Identifies one link list item that refers to another page
+`.previous`|`li`|Identifies the link list item that refers to the previous page
+`.current`|`li`|Identifies the link list item that refers to the current page
+`.following`|`li`|Identifies the link list item that refers to the following page
+`.same-page`|`li`|Identifies a link list item that would refer to the same page because the current page is the first/last one
+
+### Structure files
+File name|Description
+-|-
+_header.txt_|Contains content of `<head>` tag, e.g. title, styles, metadata
+_intro.txt_|Can contain a "welcome" text
+_legal.txt_|Can contain information about copyright, privacy policy etc.
+_footer.txt_|Can contain `<script>`s, footer etc.
 
 ## Setup
 

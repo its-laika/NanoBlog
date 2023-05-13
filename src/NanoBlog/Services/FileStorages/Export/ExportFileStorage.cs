@@ -5,7 +5,6 @@ namespace NanoBlog.Services.FileStorages.Export;
 public class ExportFileStorage : AbstractFileStorage, IExportFileStorage
 {
     private readonly IFileSystemSecurityService _fileSystemSecurityService;
-    private const string _EXPORT_FILE_NAME = "index.html";
 
     public ExportFileStorage(IFileSystemSecurityService fileSystemSecurityService) : base(
         fileSystemSecurityService,
@@ -15,16 +14,24 @@ public class ExportFileStorage : AbstractFileStorage, IExportFileStorage
         _fileSystemSecurityService = fileSystemSecurityService;
     }
 
-    public async Task WriteContentAsync(Stream content, CancellationToken cancellationToken)
+    public async Task WriteContentsAsync(IDictionary<string, Stream> pageMapping, CancellationToken cancellationToken)
     {
-        var targetFileInfo = new FileInfo(Path.Combine(BaseFolder.FullName, _EXPORT_FILE_NAME));
+        foreach (var (fileName, content) in pageMapping)
+        {
+            var targetFileInfo = new FileInfo(Path.Combine(BaseFolder.FullName, fileName));
 
-        await using var targetFileStream = targetFileInfo.Exists
-            ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
-            : targetFileInfo.Create();
+            await using var targetFileStream = targetFileInfo.Exists
+                ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
+                : targetFileInfo.Create();
 
-        _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
+            _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
 
-        await content.CopyToAsync(targetFileStream, cancellationToken);
+            await content.CopyToAsync(targetFileStream, cancellationToken);
+        }
+
+        foreach (var outdatedFileName in GetFileNames().Except(pageMapping.Keys, StringComparer.InvariantCulture))
+        {
+            Delete(outdatedFileName);
+        }
     }
 }

@@ -2,5 +2,5 @@ namespace NanoBlog.Services.FileStorages.Export;
 
 public interface IExportFileStorage
 {
-    public Task WriteContentAsync(Stream content, CancellationToken cancellationToken);
+    Task WriteContentsAsync(IDictionary<string, Stream> pageMapping, CancellationToken cancellationToken);
 }
