@@ -72,11 +72,11 @@ public partial class BlogGenerator : IBlogGenerator
         var isLastPage = pageNumber == lastPageNumber;
 
         var previousPageLink = !isFirstPage
-            ? $"../{BuildPageFileName(previousPageNumber, pageCount)}"
+            ? BuildPageLink(previousPageNumber, pageCount)
             : "#";
 
         var followingPageLink = !isLastPage
-            ? $"../{BuildPageFileName(followingPageNumber, pageCount)}"
+            ? BuildPageLink(followingPageNumber, pageCount)
             : "#";
 
         var pagination = $@"
@@ -159,5 +159,14 @@ public partial class BlogGenerator : IBlogGenerator
         return pageNumber == lastPageNumber
             ? "index.html"
             : $"archive-page-{pageNumber}.html";
+    }
+
+    private static string BuildPageLink(int pageNumber, int pageCount)
+    {
+        var lastPageNumber = pageCount - 1;
+
+        return pageNumber == lastPageNumber
+            ? "/"
+            : $"/archive/{pageNumber}/";
     }
 }

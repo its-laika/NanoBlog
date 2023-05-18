@@ -50,20 +50,13 @@ _intro.txt_|Can contain a "welcome" text
 _legal.txt_|Can contain information about copyright, privacy policy etc.
 _footer.txt_|Can contain `<script>`s, footer etc.
 
-## Setup
+## Docker setup
 
-### Docker
 - `cd docker/`
 - `cp .env.example .env`
 - set _AuthenticationToken_ in _.env_
 - optional: configure pagination and language in _.env_
 - `docker compose up`
-
-### .NET
-- `cd src/`
-- set _AuthenticationToken_ in _NanoBlog/appsettings.json_ (or _NanoBlog/appsettings.Development.json_)
-- optional: configure pagination and language in _NanoBlog/appsettings.json_
-- `dotnet run .`
 
 ## Issues, help or security related stuff
 If you want to give me any relevant information to this project, feel free to either create an issue or write me a mail.
