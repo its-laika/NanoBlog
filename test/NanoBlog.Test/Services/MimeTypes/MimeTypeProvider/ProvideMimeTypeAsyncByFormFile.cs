@@ -1,9 +1,3 @@
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
-using NanoBlog.Services.MimeTypes;
-
 namespace NanoBlog.Test.Services.MimeTypes.MimeTypeProvider;
 
 public class ProvideMimeTypeAsyncByFormFile

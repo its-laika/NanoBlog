@@ -1,6 +1,3 @@
-using FluentAssertions;
-using NanoBlog.Services.MimeTypes;
-
 namespace NanoBlog.Test.Services.MimeTypes.MimeTypeProvider;
 
 public class ProvideMimeTypeAsyncByFileName

@@ -1,0 +1,17 @@
+global using IConfiguration = NanoBlog.IConfiguration;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Filters;
+global using NanoBlog;
+global using NanoBlog.Attributes;
+global using NanoBlog.Services.Export;
+global using NanoBlog.Services.FileStorages.Assets;
+global using NanoBlog.Services.FileStorages.Export;
+global using NanoBlog.Services.FileStorages.Posts;
+global using NanoBlog.Services.FileStorages.Structure;
+global using NanoBlog.Services.FileSystemSecurity;
+global using NanoBlog.Services.Generation;
+global using NanoBlog.Services.MimeTypes;
+global using System.ComponentModel.DataAnnotations;
+global using System.Runtime.InteropServices;
+global using System.Text;
+global using System.Text.RegularExpressions;

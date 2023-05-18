@@ -1,43 +1,35 @@
-using NanoBlog.Services.FileSystemSecurity;
-
 namespace NanoBlog.Services.FileStorages;
 
 public abstract class AbstractFileStorage : IFileStorage
 {
-    protected readonly DirectoryInfo BaseFolder;
+    protected readonly DirectoryInfo BaseDirectory;
     private readonly IFileSystemSecurityService _fileSystemSecurityService;
 
     protected AbstractFileStorage(
         IFileSystemSecurityService fileSystemSecurityService,
-        DirectoryInfo baseFolder
+        DirectoryInfo baseDirectory
     )
     {
         _fileSystemSecurityService = fileSystemSecurityService;
-        BaseFolder = baseFolder;
+        BaseDirectory = baseDirectory;
 
-        if (!BaseFolder.Exists)
+        if (!BaseDirectory.Exists)
         {
-            BaseFolder.Create();
+            BaseDirectory.Create();
         }
 
-        _fileSystemSecurityService.EnsureSecureMode(BaseFolder);
+        _fileSystemSecurityService.EnsureSecureMode(BaseDirectory);
     }
 
-    public IEnumerable<string> GetFileNames()
+    public IEnumerable<FileInfo> GetFileInfos()
     {
-        BaseFolder.Refresh();
-
-        return BaseFolder
-            .EnumerateFiles()
-            .Select(f => f.Name);
+        BaseDirectory.Refresh();
+        return BaseDirectory.EnumerateFiles();
     }
 
     public bool FileExists(string fileName)
     {
-        BaseFolder.Refresh();
-
-        return BaseFolder
-            .GetFiles()
+        return GetFileInfos()
             .Any(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
     }
 
@@ -49,10 +41,7 @@ public abstract class AbstractFileStorage : IFileStorage
 
     public FileStream? TryOpenReadStream(string fileName)
     {
-        BaseFolder.Refresh();
-
-        var fileInfo = BaseFolder
-            .EnumerateFiles()
+        var fileInfo = GetFileInfos()
             .SingleOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
 
         return fileInfo?.Open(FileMode.Open, FileAccess.Read);
@@ -60,10 +49,7 @@ public abstract class AbstractFileStorage : IFileStorage
 
     public FileStream? TryOpenWriteStream(string fileName)
     {
-        BaseFolder.Refresh();
-
-        var fileInfo = BaseFolder
-            .EnumerateFiles()
+        var fileInfo = GetFileInfos()
             .SingleOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
 
         if (fileInfo is null)
@@ -75,18 +61,22 @@ public abstract class AbstractFileStorage : IFileStorage
         return fileInfo.Open(FileMode.Truncate, FileAccess.Write);
     }
 
-    public async Task<string> LoadContentAsync(FileStream fileStream, CancellationToken cancellationToken)
+    public async Task<string> LoadContentAsStringAsync(FileStream fileStream, CancellationToken cancellationToken)
     {
         using var streamReader = new StreamReader(fileStream);
         return await streamReader.ReadToEndAsync(cancellationToken);
     }
 
+    public async Task<byte[]> LoadContentAsBytesAsync(FileStream fileStream, CancellationToken cancellationToken)
+    {
+        var buffer = new byte[fileStream.Length];
+        _ = await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
+        return buffer.ToArray();
+    }
+
     public void Delete(string fileName)
     {
-        BaseFolder.Refresh();
-
-        var fileInfo = BaseFolder
-            .EnumerateFiles()
+        var fileInfo = GetFileInfos()
             .SingleOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
 
         if (fileInfo is null)
@@ -97,14 +87,10 @@ public abstract class AbstractFileStorage : IFileStorage
         fileInfo.Delete();
     }
 
-    public FileStream CreateWriteStream()
+    public void Truncate()
     {
-        var fileName = $"{DateTime.UtcNow.Ticks}-{Guid.NewGuid()}.txt";
-        var fileInfo = new FileInfo(Path.Combine(BaseFolder.FullName, fileName));
-
-        var fileStream = fileInfo.Create();
-        _fileSystemSecurityService.EnsureSecureMode(fileInfo);
-
-        return fileStream;
+        BaseDirectory.Delete(true);
+        BaseDirectory.Create();
+        _fileSystemSecurityService.EnsureSecureMode(BaseDirectory);
     }
 }

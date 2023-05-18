@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using NanoBlog.Attributes;
-using NanoBlog.Services.FileStorages.Assets;
-using NanoBlog.Services.MimeTypes;
-
 namespace NanoBlog.Controllers;
 
 [ApiController]
@@ -28,7 +23,8 @@ public class AssetsController : ControllerBase
     public IActionResult GetFileNames()
     {
         var fileNames = _fileStorage
-            .GetFileNames()
+            .GetFileInfos()
+            .Select(f => f.Name)
             .OrderDescending();
 
         return Ok(fileNames);
@@ -50,7 +46,7 @@ public class AssetsController : ControllerBase
             return BadRequest();
         }
 
-        await using var fileStream = _fileStorage.CreateWriteStream(mimeType);
+        await using var fileStream = _fileStorage.CreateNewFileWriteStreamByMimeType(mimeType);
         await content.CopyToAsync(fileStream, cancellationToken);
 
         var fileName = Path.GetFileName(fileStream.Name);
@@ -74,7 +70,7 @@ public class AssetsController : ControllerBase
         var mimeType = await _mimeTypeProvider.ProvideMimeTypeAsync(fileStream.Name, fileStream, cancellationToken)
                        ?? throw new Exception("Could not determine MIME type of stored file");
 
-        var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
+        var content = await _fileStorage.LoadContentAsBytesAsync(fileStream, cancellationToken);
 
         return new FileContentResult(content, mimeType.AsString());
     }
@@ -118,10 +114,15 @@ public class AssetsController : ControllerBase
             }
         }
 
-        await using var fileWriteStream = _fileStorage.OpenWriteStream(fileName);
+        await using var fileWriteStream = _fileStorage.TryOpenWriteStream(fileName)
+                                          ?? throw new FileNotFoundException($"Could not find file {fileName}");
+
         await content.CopyToAsync(fileWriteStream, cancellationToken);
 
-        _logger.LogInformation("Asset {fileName} has been updated", Path.GetFileName(fileWriteStream.Name));
+        _logger.LogInformation(
+            "Asset {fileName} has been updated",
+            Path.GetFileName(fileWriteStream.Name)
+        );
 
         return NoContent();
     }

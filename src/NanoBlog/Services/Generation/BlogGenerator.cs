@@ -1,9 +1,3 @@
-using System.Text.RegularExpressions;
-using NanoBlog.Services.FileStorages.Posts;
-using NanoBlog.Services.FileStorages.Structure;
-using NanoBlog.Extensions;
-using System.Text;
-
 namespace NanoBlog.Services.Generation;
 
 public partial class BlogGenerator : IBlogGenerator
@@ -26,7 +20,7 @@ public partial class BlogGenerator : IBlogGenerator
         _configuration = configuration;
     }
 
-    public async Task<IDictionary<string, Stream>> GeneratePageMappingAsync(CancellationToken cancellationToken)
+    public async Task<GeneratedPagesContainer> GeneratePageContentsAsync(CancellationToken cancellationToken)
     {
         var fileContents = await LoadFileContentsAsync(cancellationToken);
 
@@ -38,15 +32,17 @@ public partial class BlogGenerator : IBlogGenerator
             ? new List<IEnumerable<string>>(fileContents.Posts.Chunk(chunkSize).ToList())
             : new List<IEnumerable<string>> { fileContents.Posts };
 
-        return chunks
+        var pages = chunks
             .Select(posts => posts.Reverse())
             .Select((posts, index) => GenerateContent(fileContents.WithPosts(posts), index, chunks.Count))
             .Select(Encoding.UTF8.GetBytes)
             .Select(bytes => new MemoryStream(bytes))
-            .ToDictionary(
-                (_, index) => BuildPageFileName(index, chunks.Count),
-                (stream, _) => stream as Stream
-            );
+            .ToList();
+
+        return new GeneratedPagesContainer(
+            pages.Last(),
+            pages.Take(pages.Count - 1)
+        );
     }
 
     public async Task<string> GeneratePreviewAsync(CancellationToken cancellationToken)
@@ -72,11 +68,11 @@ public partial class BlogGenerator : IBlogGenerator
         var isLastPage = pageNumber == lastPageNumber;
 
         var previousPageLink = !isFirstPage
-            ? $"../{BuildPageFileName(previousPageNumber, pageCount)}"
+            ? BuildPageLink(previousPageNumber, pageCount)
             : "#";
 
         var followingPageLink = !isLastPage
-            ? $"../{BuildPageFileName(followingPageNumber, pageCount)}"
+            ? BuildPageLink(followingPageNumber, pageCount)
             : "#";
 
         var pagination = $@"
@@ -126,20 +122,21 @@ public partial class BlogGenerator : IBlogGenerator
         await using var footerStream = _structureFileStorage.OpenReadStream(IStructureFileStorage.FILE_NAME_FOOTER);
 
         var structureFiles = await Task.WhenAll(
-            _structureFileStorage.LoadContentAsync(headerStream, cancellationToken),
-            _structureFileStorage.LoadContentAsync(introStream, cancellationToken),
-            _structureFileStorage.LoadContentAsync(legalStream, cancellationToken),
-            _structureFileStorage.LoadContentAsync(footerStream, cancellationToken)
+            _structureFileStorage.LoadContentAsStringAsync(headerStream, cancellationToken),
+            _structureFileStorage.LoadContentAsStringAsync(introStream, cancellationToken),
+            _structureFileStorage.LoadContentAsStringAsync(legalStream, cancellationToken),
+            _structureFileStorage.LoadContentAsStringAsync(footerStream, cancellationToken)
         );
 
         var postsFiles = await Task.WhenAll(
             _postsFileStorage
-                .GetFileNames()
+                .GetFileInfos()
+                .Select(f => f.Name)
                 .Order()
                 .Select(async fileName =>
                 {
                     await using var stream = _postsFileStorage.OpenReadStream(fileName);
-                    return await _postsFileStorage.LoadContentAsync(stream, cancellationToken);
+                    return await _postsFileStorage.LoadContentAsStringAsync(stream, cancellationToken);
                 })
         );
 
@@ -152,12 +149,17 @@ public partial class BlogGenerator : IBlogGenerator
         );
     }
 
-    private static string BuildPageFileName(int pageNumber, int pageCount)
+    private string BuildPageLink(int pageNumber, int pageCount)
     {
-        var lastPageNumber = pageCount - 1;
+        if (pageNumber == pageCount - 1)
+        {
+            return _configuration.BlogRootServerDirectory;
+        }
 
-        return pageNumber == lastPageNumber
-            ? "index.html"
-            : $"archive-page-{pageNumber}.html";
+        return Path.Combine(
+            _configuration.BlogRootServerDirectory,
+            IConfiguration.ARCHIVE_DIRECTORY_NAME,
+            pageNumber.ToString(IConfiguration.ARCHIVE_INDEX_FORMAT)
+        );
     }
 }

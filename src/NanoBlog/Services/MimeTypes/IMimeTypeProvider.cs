@@ -1,5 +1,3 @@
-using NanoBlog.Attributes;
-
 namespace NanoBlog.Services.MimeTypes;
 
 public interface IMimeTypeProvider

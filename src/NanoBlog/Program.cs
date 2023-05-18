@@ -1,15 +1,3 @@
-using System.Runtime.InteropServices;
-using NanoBlog;
-using NanoBlog.Attributes;
-using NanoBlog.Services.FileStorages.Assets;
-using NanoBlog.Services.FileStorages.Export;
-using NanoBlog.Services.FileStorages.Posts;
-using NanoBlog.Services.FileStorages.Structure;
-using NanoBlog.Services.FileSystemSecurity;
-using NanoBlog.Services.Generation;
-using NanoBlog.Services.MimeTypes;
-using IConfiguration = NanoBlog.IConfiguration;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAssetsFileStorage, AssetsFileStorage>();
@@ -18,6 +6,7 @@ builder.Services.AddScoped<IExportFileStorage, ExportFileStorage>();
 builder.Services.AddScoped<IMimeTypeProvider, MimeTypeProvider>();
 builder.Services.AddScoped<IPostsFileStorage, PostsFileStorage>();
 builder.Services.AddScoped<IStructureFileStorage, StructureFileStorage>();
+builder.Services.AddScoped<IExportService, ExportService>();
 
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {

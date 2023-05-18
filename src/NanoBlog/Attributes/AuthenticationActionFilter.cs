@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace NanoBlog.Attributes;
 
 public class AuthenticationActionFilter : IResourceFilter

@@ -1,13 +1,3 @@
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
-
 namespace NanoBlog.Test.Attributes.AuthenticationActionFilter;
 
 public class OnActionExecuting

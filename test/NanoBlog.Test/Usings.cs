@@ -1,1 +1,12 @@
+global using FluentAssertions;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Abstractions;
+global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.AspNetCore.Mvc.ModelBinding;
+global using Microsoft.AspNetCore.Routing;
+global using Microsoft.Extensions.Primitives;
+global using Microsoft.Net.Http.Headers;
+global using NanoBlog.Services.MimeTypes;
+global using System.Text;
 global using Xunit;

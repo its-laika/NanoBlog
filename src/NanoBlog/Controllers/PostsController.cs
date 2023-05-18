@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using NanoBlog.Attributes;
-using NanoBlog.Services.FileStorages.Posts;
-
 namespace NanoBlog.Controllers;
 
 [ApiController]
@@ -24,7 +20,8 @@ public class PostsController : ControllerBase
     public IActionResult GetFileNames()
     {
         var fileNames = _fileStorage
-            .GetFileNames()
+            .GetFileInfos()
+            .Select(f => f.Name)
             .OrderDescending();
 
         return Ok(fileNames);
@@ -33,7 +30,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
-        await using var fileStream = _fileStorage.CreateWriteStream();
+        await using var fileStream = _fileStorage.CreateNewFileWriteStream();
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
         var fileName = Path.GetFileName(fileStream.Name);
@@ -54,7 +51,7 @@ public class PostsController : ControllerBase
             return NotFound();
         }
 
-        var content = await _fileStorage.LoadContentAsync(fileStream, cancellationToken);
+        var content = await _fileStorage.LoadContentAsStringAsync(fileStream, cancellationToken);
         return Content(content, "text/html");
     }
 

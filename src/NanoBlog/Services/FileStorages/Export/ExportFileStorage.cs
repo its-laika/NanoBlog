@@ -1,37 +1,85 @@
-using NanoBlog.Services.FileSystemSecurity;
-
 namespace NanoBlog.Services.FileStorages.Export;
 
 public class ExportFileStorage : AbstractFileStorage, IExportFileStorage
 {
     private readonly IFileSystemSecurityService _fileSystemSecurityService;
 
-    public ExportFileStorage(IFileSystemSecurityService fileSystemSecurityService) : base(
+    public ExportFileStorage(
+        IFileSystemSecurityService fileSystemSecurityService
+    ) : base(
         fileSystemSecurityService,
-        new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Export"))
+        Configuration.GetExportDirectoryInfo()
     )
     {
         _fileSystemSecurityService = fileSystemSecurityService;
     }
 
-    public async Task WriteContentsAsync(IDictionary<string, Stream> pageMapping, CancellationToken cancellationToken)
+    public async Task WriteMainPageContentAsync(Stream content, CancellationToken cancellationToken)
     {
-        foreach (var (fileName, content) in pageMapping)
-        {
-            var targetFileInfo = new FileInfo(Path.Combine(BaseFolder.FullName, fileName));
+        var targetFileInfo = new FileInfo(Path.Combine(BaseDirectory.FullName, IConfiguration.INDEX_FILE_NAME));
 
-            await using var targetFileStream = targetFileInfo.Exists
-                ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
-                : targetFileInfo.Create();
+        await using var targetFileStream = targetFileInfo.Exists
+            ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
+            : targetFileInfo.Create();
 
-            _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
+        _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
 
-            await content.CopyToAsync(targetFileStream, cancellationToken);
-        }
+        await content.CopyToAsync(targetFileStream, cancellationToken);
+    }
 
-        foreach (var outdatedFileName in GetFileNames().Except(pageMapping.Keys, StringComparer.InvariantCulture))
-        {
-            Delete(outdatedFileName);
-        }
+    public async Task WriteArchivePageContentAsync(
+        Stream content,
+        int archiveIndex,
+        CancellationToken cancellationToken
+    )
+    {
+        var archiveDirectoryPath = Path.Combine(
+            BaseDirectory.FullName,
+            IConfiguration.ARCHIVE_DIRECTORY_NAME
+        );
+
+        var archivePageDirectoryPath = Path.Combine(
+            archiveDirectoryPath,
+            archiveIndex.ToString(IConfiguration.ARCHIVE_INDEX_FORMAT)
+        );
+
+        var archivePageFilePath = Path.Combine(
+            archivePageDirectoryPath,
+            IConfiguration.INDEX_FILE_NAME
+        );
+
+        var archiveDirectoryInfo = Directory.CreateDirectory(archiveDirectoryPath);
+        _fileSystemSecurityService.EnsureSecureMode(archiveDirectoryInfo);
+
+        var archivePageDirectoryInfo = Directory.CreateDirectory(archivePageDirectoryPath);
+        _fileSystemSecurityService.EnsureSecureMode(archivePageDirectoryInfo);
+
+        var targetFileInfo = new FileInfo(archivePageFilePath);
+
+        await using var targetFileStream = targetFileInfo.Exists
+            ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
+            : targetFileInfo.Create();
+
+        _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
+
+        await content.CopyToAsync(targetFileStream, cancellationToken);
+    }
+
+    public async Task CopyAssetFileAsync(FileInfo fileInfo, CancellationToken cancellationToken)
+    {
+        var assetDirectoryPath = Path.Combine(BaseDirectory.FullName, IConfiguration.ASSETS_DIRECTORY_NAME);
+        var assetDirectoryInfo = Directory.CreateDirectory(assetDirectoryPath);
+        _fileSystemSecurityService.EnsureSecureMode(assetDirectoryInfo);
+
+        var targetFileInfo = new FileInfo(Path.Combine(assetDirectoryInfo.FullName, fileInfo.Name));
+
+        await using var targetFileStream = targetFileInfo.Exists
+            ? targetFileInfo.Open(FileMode.Truncate, FileAccess.Write)
+            : targetFileInfo.Create();
+
+        _fileSystemSecurityService.EnsureSecureMode(targetFileInfo);
+
+        await using var readStream = fileInfo.OpenRead();
+        await readStream.CopyToAsync(targetFileStream, cancellationToken);
     }
 }
