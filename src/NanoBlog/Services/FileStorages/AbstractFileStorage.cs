@@ -89,8 +89,14 @@ public abstract class AbstractFileStorage : IFileStorage
 
     public void Truncate()
     {
-        BaseDirectory.Delete(true);
-        BaseDirectory.Create();
-        _fileSystemSecurityService.EnsureSecureMode(BaseDirectory);
+        foreach (var fileInfo in BaseDirectory.EnumerateFiles())
+        {
+            fileInfo.Delete();
+        }
+
+        foreach (var directoryInfo in BaseDirectory.EnumerateDirectories())
+        {
+            Directory.Delete(directoryInfo.FullName, true);
+        }
     }
 }
