@@ -1,11 +1,11 @@
 version: '3.8'
 services:
   nanoblog:
-    image: ghcr.io/neon-js/nanoblog:v0.0.5
+    image: ghcr.io/neon-js/nanoblog:v0.0.9
     # Use this if you want to use your self built version.
     # build:
-    #  context: ../src/NanoBlog
-    #  dockerfile: ../../docker/Dockerfile
+    #  context: ../NanoBlog
+    #  dockerfile: ../docker/Dockerfile
     env_file:
       - .env
     volumes:

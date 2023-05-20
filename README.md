@@ -60,7 +60,7 @@ _footer.txt_|Can contain `<script>`s, footer etc.
 - `docker compose up`
 
 ### .NET
-- `cd src/`
+- `cd NanoBlog/`
 - set _AuthenticationToken_ in _NanoBlog/appsettings.json_ (or _NanoBlog/appsettings.Development.json_)
 - optional: configure pagination and language in _NanoBlog/appsettings.json_
 - `dotnet run .`

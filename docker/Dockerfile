@@ -1,11 +1,11 @@
-﻿# This Dockerfile only works in .NET project root (../src/NanoBlog) 
+﻿# This Dockerfile only works in .NET project root (../NanoBlog) 
 # As `docker compose` can handle this and for reasons of cleanliness, it's located in this subfolder.
 # If you want to use docker without compose, you may copy this file into the .NET project root.
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /src
 COPY ["NanoBlog.csproj", "./"]
 RUN dotnet restore "NanoBlog.csproj"

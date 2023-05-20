@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog", "src\NanoBlog\NanoBlog.csproj", "{AAE94257-BAF2-41C5-BA39-2772A8B2196F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog", "NanoBlog\NanoBlog.csproj", "{AAE94257-BAF2-41C5-BA39-2772A8B2196F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog.Test", "test\NanoBlog.Test\NanoBlog.Test.csproj", "{CF82D4A8-682B-4158-B9EA-782BDDFE962B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoBlog.Test", "NanoBlog.Test\NanoBlog.Test.csproj", "{CF82D4A8-682B-4158-B9EA-782BDDFE962B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

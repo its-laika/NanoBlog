@@ -1,1 +1,0 @@
-<title>neon-js' nano-blog</title>

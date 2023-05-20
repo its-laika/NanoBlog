@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NanoBlog\NanoBlog.csproj" />
+        <ProjectReference Include="..\NanoBlog\NanoBlog.csproj" />
     </ItemGroup>
 
 </Project>

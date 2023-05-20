@@ -85,6 +85,12 @@ public class AssetsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
+        var fileInfo = _stage.AssetsDirectory.TryFindFileInfo(fileName);
+        if (fileInfo is null)
+        {
+            return NotFound();
+        }
+
         var content = new MemoryStream();
         await using (var formFileStream = file.OpenReadStream())
         {
@@ -98,13 +104,8 @@ public class AssetsController : ControllerBase
             return BadRequest();
         }
 
-        await using (var fileReadStream = _stage.AssetsDirectory.TryFindFileInfo(fileName)?.OpenRead())
+        await using (var fileReadStream = fileInfo.OpenRead())
         {
-            if (fileReadStream is null)
-            {
-                return NotFound();
-            }
-
             var storedFileMimeType = await _mimeTypeProvider.ProvideMimeTypeAsync(
                 fileReadStream.Name,
                 fileReadStream,
@@ -117,11 +118,9 @@ public class AssetsController : ControllerBase
             }
         }
 
-        await using var fileWriteStream = _stage.AssetsDirectory
-               .TryFindFileInfo(fileName)?
-               .EnsureFileMode()
-               .OpenWrite()
-            ?? throw new FileNotFoundException($"Could not find file {fileName}");
+        await using var fileWriteStream = fileInfo
+           .EnsureFileMode()
+           .OpenWrite();
 
         await content.CopyToAsync(fileWriteStream, cancellationToken);
 

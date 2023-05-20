@@ -1,3 +1,0 @@
-<script>
-    console.log('powered by: nano blog');
-</script>
