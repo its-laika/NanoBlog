@@ -8,6 +8,11 @@ public interface IConfiguration
     public const string ARCHIVE_DIRECTORY_NAME = "archive";
     public const string ARCHIVE_INDEX_FORMAT = "D";
 
+    public const string STAGE_STRUCTURE_FILE_NAME_HEADER = "header.txt";
+    public const string STAGE_STRUCTURE_FILE_NAME_INTRO = "intro.txt";
+    public const string STAGE_STRUCTURE_FILE_NAME_LEGAL = "legal.txt";
+    public const string STAGE_STRUCTURE_FILE_NAME_FOOTER = "footer.txt";
+
     protected const string STAGE_ASSETS_DIRECTORY_NAME = "BlogFiles/Assets";
     protected const string STAGE_POSTS_DIRECTORY_NAME = "BlogFiles/Posts";
     protected const string STAGE_STRUCTURE_DIRECTORY_NAME = "BlogFiles/Structure";

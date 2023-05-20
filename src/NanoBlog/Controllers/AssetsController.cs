@@ -4,17 +4,17 @@ namespace NanoBlog.Controllers;
 [Route("assets")]
 public class AssetsController : ControllerBase
 {
-    private readonly IAssetsFileStorage _fileStorage;
+    private readonly IStageDirectoryContainer _stage;
     private readonly IMimeTypeProvider _mimeTypeProvider;
     private readonly ILogger<AssetsController> _logger;
 
     public AssetsController(
-        IAssetsFileStorage fileStorage,
+        IStageDirectoryContainer stage,
         IMimeTypeProvider mimeTypeProvider,
         ILogger<AssetsController> logger
     )
     {
-        _fileStorage = fileStorage;
+        _stage = stage;
         _mimeTypeProvider = mimeTypeProvider;
         _logger = logger;
     }
@@ -22,10 +22,10 @@ public class AssetsController : ControllerBase
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _fileStorage
-            .GetFileInfos()
-            .Select(f => f.Name)
-            .OrderDescending();
+        var fileNames = _stage.AssetsDirectory
+           .EnumerateFiles()
+           .Select(f => f.Name)
+           .OrderDescending();
 
         return Ok(fileNames);
     }
@@ -46,12 +46,12 @@ public class AssetsController : ControllerBase
             return BadRequest();
         }
 
-        await using var fileStream = _fileStorage.CreateNewFileWriteStreamByMimeType(mimeType);
+        var fileName = $"{DateTime.UtcNow.Ticks}-{Guid.NewGuid()}.{mimeType.GetExtension()}";
+
+        await using var fileStream = _stage.AssetsDirectory.CreateFile(fileName);
         await content.CopyToAsync(fileStream, cancellationToken);
 
-        var fileName = Path.GetFileName(fileStream.Name);
         _logger.LogInformation("Asset {fileName} has been created", fileName);
-
         return CreatedAtAction("GetFileContent", new { fileName }, null);
     }
 
@@ -61,16 +61,19 @@ public class AssetsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
+        await using var fileStream = _stage.AssetsDirectory
+           .TryFindFileInfo(fileName)?
+           .OpenRead();
+
         if (fileStream is null)
         {
             return NotFound();
         }
 
         var mimeType = await _mimeTypeProvider.ProvideMimeTypeAsync(fileStream.Name, fileStream, cancellationToken)
-                       ?? throw new Exception("Could not determine MIME type of stored file");
+            ?? throw new Exception("Could not determine MIME type of stored file");
 
-        var content = await _fileStorage.LoadContentAsBytesAsync(fileStream, cancellationToken);
+        var content = await fileStream.LoadAsBytesAsync(cancellationToken);
 
         return new FileContentResult(content, mimeType.AsString());
     }
@@ -95,7 +98,7 @@ public class AssetsController : ControllerBase
             return BadRequest();
         }
 
-        await using (var fileReadStream = _fileStorage.TryOpenReadStream(fileName))
+        await using (var fileReadStream = _stage.AssetsDirectory.TryFindFileInfo(fileName)?.OpenRead())
         {
             if (fileReadStream is null)
             {
@@ -114,30 +117,29 @@ public class AssetsController : ControllerBase
             }
         }
 
-        await using var fileWriteStream = _fileStorage.TryOpenWriteStream(fileName)
-                                          ?? throw new FileNotFoundException($"Could not find file {fileName}");
+        await using var fileWriteStream = _stage.AssetsDirectory
+               .TryFindFileInfo(fileName)?
+               .EnsureFileMode()
+               .OpenWrite()
+            ?? throw new FileNotFoundException($"Could not find file {fileName}");
 
         await content.CopyToAsync(fileWriteStream, cancellationToken);
 
-        _logger.LogInformation(
-            "Asset {fileName} has been updated",
-            Path.GetFileName(fileWriteStream.Name)
-        );
-
+        _logger.LogInformation("Asset {fileName} has been updated", fileName);
         return NoContent();
     }
 
     [HttpDelete("{fileName}")]
     public IActionResult DeleteFileAsync([ValidFileName.Asset] string fileName)
     {
-        if (!_fileStorage.FileExists(fileName))
+        if (!_stage.AssetsDirectory.HasFile(fileName))
         {
             return NotFound();
         }
 
-        _fileStorage.Delete(fileName);
-        _logger.LogInformation("Asset {fileName} has been deleted", fileName);
+        _stage.AssetsDirectory.DeleteFile(fileName);
 
+        _logger.LogInformation("Asset {fileName} has been deleted", fileName);
         return NoContent();
     }
 }

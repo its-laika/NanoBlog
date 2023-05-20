@@ -19,9 +19,38 @@ public class IsValid
     {
         var sut = new NanoBlog.Attributes.ValidFileName.Asset();
 
-        sut.IsValid("a-normal-file.txt").Should().BeFalse();
-        sut.IsValid("a-normal-file.exe").Should().BeFalse();
-        sut.IsValid("a-normal-file.jfif").Should().BeFalse();
-        sut.IsValid("a-normal-file.").Should().BeFalse();
+         sut.IsValid("a-normal-file.txt").Should().BeFalse();
+         sut.IsValid("a-normal-file.jfif").Should().BeFalse();
+         
+         sut.IsValid("What\tare whitespaces anyway?.txt").Should().BeFalse();
+         sut.IsValid("__.txt").Should().BeFalse();
+         sut.IsValid("/../../../etc/passwd.txt").Should().BeFalse();
+         sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt").Should().BeFalse();
+         sut.IsValid("https://raw.githubusercontent.com/neon-JS/NanoBlog/main/src/BlogFiles/Structure/footer.txt")
+            .Should()
+            .BeFalse();
+         sut.IsValid("totally-harmless.exe").Should().BeFalse();
+         sut.IsValid("a-normal-file.").Should().BeFalse();
+         sut.IsValid("~/test.txt").Should().BeFalse();
+         sut.IsValid("~.txt").Should().BeFalse(); /* avoid confusion */
+    }
+    
+    [Fact]
+    public void TestFileNameLength()
+    {
+        var stringBuilder = new StringBuilder();
+        for (var i = 0; i < 96; i++)
+        {
+            stringBuilder.Append('A');
+        }
+
+        stringBuilder.Append(".jpg");
+
+        var validFileName = stringBuilder.ToString();
+        var invalidFileName = 'A' + stringBuilder.ToString();
+
+        var sut = new NanoBlog.Attributes.ValidFileName.Asset();
+        sut.IsValid(validFileName).Should().BeTrue();
+        sut.IsValid(invalidFileName).Should().BeFalse();
     }
 }

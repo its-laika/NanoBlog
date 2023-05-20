@@ -3,17 +3,17 @@ namespace NanoBlog.Controllers;
 [ApiController]
 public class ExportController : ControllerBase
 {
-    private readonly IExportService _exportService;
+    private readonly IExportationService _exportationService;
     private readonly IBlogGenerator _blogGenerator;
     private readonly ILogger<ExportController> _logger;
 
     public ExportController(
-        IExportService exportService,
+        IExportationService exportationService,
         IBlogGenerator blogGenerator,
         ILogger<ExportController> logger
     )
     {
-        _exportService = exportService;
+        _exportationService = exportationService;
         _blogGenerator = blogGenerator;
         _logger = logger;
     }
@@ -21,7 +21,7 @@ public class ExportController : ControllerBase
     [HttpPost("export")]
     public async Task<IActionResult> Export(CancellationToken cancellationToken)
     {
-        await _exportService.ExportAsync(cancellationToken);
+        await _exportationService.ExportAsync(cancellationToken);
 
         _logger.LogInformation("Exported successfully");
         return NoContent();
@@ -30,7 +30,8 @@ public class ExportController : ControllerBase
     [HttpGet("preview")]
     public async Task<IActionResult> GetPreview(CancellationToken cancellationToken)
     {
-        var generatedContent = await _blogGenerator.GeneratePreviewAsync(cancellationToken);
-        return Content(generatedContent, "text/html");
+        var preview = await _blogGenerator.GeneratePreviewAsync(cancellationToken);
+
+        return Content(preview, "text/html");
     }
 }

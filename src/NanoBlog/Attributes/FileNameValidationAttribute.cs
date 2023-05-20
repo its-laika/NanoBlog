@@ -17,11 +17,21 @@ public partial class ValidFileName : ValidationAttribute
         }
     }
 
+    public class All : ValidFileName
+    {
+        public All() : base(AllRegex())
+        {
+        }
+    }
+
     [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif|svg)$")]
     private static partial Regex AssetRegex();
 
     [GeneratedRegex("^[A-Za-z0-9\\-]+\\.txt$")]
     private static partial Regex TextRegex();
+
+    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif|svg|txt|html)")]
+    private static partial Regex AllRegex();
 
     private const int _MAX_FILE_LENGTH = 100;
     private readonly Regex _validFileNameRegex;

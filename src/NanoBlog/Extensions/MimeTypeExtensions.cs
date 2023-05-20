@@ -1,12 +1,4 @@
-namespace NanoBlog.Services.MimeTypes;
-
-public enum MimeType
-{
-    Jpeg,
-    Png,
-    Gif,
-    Svg
-}
+namespace NanoBlog.Extensions;
 
 public static class MimeTypeExtensions
 {

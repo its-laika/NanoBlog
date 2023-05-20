@@ -4,25 +4,25 @@ namespace NanoBlog.Controllers;
 [Route("posts")]
 public class PostsController : ControllerBase
 {
-    private readonly IPostsFileStorage _fileStorage;
+    private readonly IStageDirectoryContainer _stage;
     private readonly ILogger<PostsController> _logger;
 
     public PostsController(
-        IPostsFileStorage fileStorage,
+        IStageDirectoryContainer stage,
         ILogger<PostsController> logger
     )
     {
-        _fileStorage = fileStorage;
+        _stage = stage;
         _logger = logger;
     }
 
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _fileStorage
-            .GetFileInfos()
-            .Select(f => f.Name)
-            .OrderDescending();
+        var fileNames = _stage.PostsDirectory
+           .EnumerateFiles()
+           .Select(f => f.Name)
+           .OrderDescending();
 
         return Ok(fileNames);
     }
@@ -30,12 +30,12 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
-        await using var fileStream = _fileStorage.CreateNewFileWriteStream();
+        var fileName = $"{DateTime.UtcNow.Ticks}-{Guid.NewGuid()}.txt";
+
+        await using var fileStream = _stage.PostsDirectory.CreateFile(fileName);
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        var fileName = Path.GetFileName(fileStream.Name);
         _logger.LogInformation("Post {fileName} has been created", fileName);
-
         return CreatedAtAction("GetFileContent", new { fileName }, null);
     }
 
@@ -45,13 +45,17 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
+        await using var fileStream = _stage.PostsDirectory
+           .TryFindFileInfo(fileName)?
+           .OpenRead();
+
         if (fileStream is null)
         {
             return NotFound();
         }
 
-        var content = await _fileStorage.LoadContentAsStringAsync(fileStream, cancellationToken);
+        var content = await fileStream.LoadAsStringAsync(cancellationToken);
+
         return Content(content, "text/html");
     }
 
@@ -61,29 +65,33 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
+        await using var fileStream = _stage.PostsDirectory
+           .TryFindFileInfo(fileName)?
+           .EnsureFileMode()
+           .OpenWrite();
+
         if (fileStream is null)
         {
             return NotFound();
         }
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
-        _logger.LogInformation("Post {fileName} has been updated", fileName);
 
+        _logger.LogInformation("Post {fileName} has been updated", fileName);
         return NoContent();
     }
 
     [HttpDelete("{fileName}")]
     public IActionResult DeleteFileAsync([ValidFileName.Text] string fileName)
     {
-        if (!_fileStorage.FileExists(fileName))
+        if (!_stage.PostsDirectory.HasFile(fileName))
         {
             return NotFound();
         }
 
-        _fileStorage.Delete(fileName);
-        _logger.LogInformation("Post {fileName} has been deleted", fileName);
+        _stage.PostsDirectory.DeleteFile(fileName);
 
+        _logger.LogInformation("Post {fileName} has been deleted", fileName);
         return NoContent();
     }
 }

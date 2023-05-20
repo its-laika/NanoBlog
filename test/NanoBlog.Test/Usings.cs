@@ -7,6 +7,5 @@ global using Microsoft.AspNetCore.Mvc.ModelBinding;
 global using Microsoft.AspNetCore.Routing;
 global using Microsoft.Extensions.Primitives;
 global using Microsoft.Net.Http.Headers;
-global using NanoBlog.Services.MimeTypes;
 global using System.Text;
 global using Xunit;

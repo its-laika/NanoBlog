@@ -4,25 +4,25 @@ namespace NanoBlog.Controllers;
 [Route("structure")]
 public class StructureController : ControllerBase
 {
-    private readonly IStructureFileStorage _fileStorage;
+    private readonly IStageDirectoryContainer _stage;
     private readonly ILogger<StructureController> _logger;
 
     public StructureController(
-        IStructureFileStorage fileStorage,
+        IStageDirectoryContainer stage,
         ILogger<StructureController> logger
     )
     {
-        _fileStorage = fileStorage;
+        _stage = stage;
         _logger = logger;
     }
 
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _fileStorage
-            .GetFileInfos()
-            .Select(f => f.Name)
-            .OrderDescending();
+        var fileNames = _stage.StructureDirectory
+           .EnumerateFiles()
+           .Select(f => f.Name)
+           .OrderDescending();
 
         return Ok(fileNames);
     }
@@ -33,13 +33,16 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _fileStorage.TryOpenReadStream(fileName);
+        await using var fileStream = _stage.StructureDirectory
+           .TryFindFileInfo(fileName)?
+           .OpenRead();
+
         if (fileStream is null)
         {
             return NotFound();
         }
 
-        var content = await _fileStorage.LoadContentAsStringAsync(fileStream, cancellationToken);
+        var content = await fileStream.LoadAsStringAsync(cancellationToken);
         return Content(content, "text/html");
     }
 
@@ -49,7 +52,11 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _fileStorage.TryOpenWriteStream(fileName);
+        await using var fileStream = _stage.StructureDirectory
+           .TryFindFileInfo(fileName)?
+           .EnsureFileMode()
+           .OpenWrite();
+
         if (fileStream is null)
         {
             return NotFound();

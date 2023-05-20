@@ -1,3 +1,5 @@
+using NanoBlog.Containers;
+
 namespace NanoBlog.Test.Services.MimeTypes.MimeTypeProvider;
 
 public class ProvideMimeTypeAsyncByFileName

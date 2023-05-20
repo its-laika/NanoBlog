@@ -2,27 +2,24 @@ namespace NanoBlog.Services.Generation;
 
 public partial class BlogGenerator : IBlogGenerator
 {
-    private readonly IPostsFileStorage _postsFileStorage;
-    private readonly IStructureFileStorage _structureFileStorage;
+    private readonly IStageDirectoryContainer _stage;
     private readonly IConfiguration _configuration;
 
     [GeneratedRegex("\\s{2,}")]
     private static partial Regex ReduceSpacingRegex();
 
     public BlogGenerator(
-        IPostsFileStorage postsFileStorage,
-        IStructureFileStorage structureFileStorage,
+        IStageDirectoryContainer stage,
         IConfiguration configuration
     )
     {
-        _postsFileStorage = postsFileStorage;
-        _structureFileStorage = structureFileStorage;
+        _stage = stage;
         _configuration = configuration;
     }
 
-    public async Task<GeneratedPagesContainer> GeneratePageContentsAsync(CancellationToken cancellationToken)
+    public async Task<GeneratedPageContentsContainer> GeneratePageContentsAsync(CancellationToken cancellationToken)
     {
-        var fileContents = await LoadFileContentsAsync(cancellationToken);
+        var fileContents = await LoadStageFileContentsAsync(cancellationToken);
 
         int? pageSize = _configuration.UsePagination
             ? _configuration.PageSize
@@ -33,13 +30,13 @@ public partial class BlogGenerator : IBlogGenerator
             : new List<IEnumerable<string>> { fileContents.Posts };
 
         var pages = chunks
-            .Select(posts => posts.Reverse())
-            .Select((posts, index) => GenerateContent(fileContents.WithPosts(posts), index, chunks.Count))
-            .Select(Encoding.UTF8.GetBytes)
-            .Select(bytes => new MemoryStream(bytes))
-            .ToList();
+           .Select(posts => posts.Reverse())
+           .Select((posts, index) => GenerateContent(fileContents.WithPosts(posts), index, chunks.Count))
+           .Select(Encoding.UTF8.GetBytes)
+           .Select(bytes => new MemoryStream(bytes))
+           .ToList();
 
-        return new GeneratedPagesContainer(
+        return new GeneratedPageContentsContainer(
             pages.Last(),
             pages.Take(pages.Count - 1)
         );
@@ -47,16 +44,20 @@ public partial class BlogGenerator : IBlogGenerator
 
     public async Task<string> GeneratePreviewAsync(CancellationToken cancellationToken)
     {
-        var fileContents = await LoadFileContentsAsync(cancellationToken);
+        var fileContents = await LoadStageFileContentsAsync(cancellationToken);
         return GenerateContent(fileContents);
     }
 
-    private string GenerateContent(FilesContentContainer fileContents, int pageNumber = 0, int pageCount = 1)
+    private string GenerateContent(
+        StageFilesContentContainer stageFileContentContainer,
+        int pageNumber = 0,
+        int pageCount = 1
+    )
     {
-        var combinedPosts = fileContents.Posts
-            .Where(post => !string.IsNullOrWhiteSpace(post))
-            .Aggregate(new StringBuilder(), (carry, post) => carry.Append(post))
-            .ToString();
+        var combinedPosts = stageFileContentContainer.Posts
+           .Where(post => !string.IsNullOrWhiteSpace(post))
+           .Aggregate(new StringBuilder(), (carry, post) => carry.Append(post))
+           .ToString();
 
         const int firstPageNumber = 0;
         var lastPageNumber = pageCount - 1;
@@ -92,21 +93,21 @@ public partial class BlogGenerator : IBlogGenerator
         ";
 
         return ReduceSpacingRegex()
-            .Replace($@"
+           .Replace($@"
                 <!DOCTYPE html>
                 <html lang='{_configuration.Language}'>
                     <head>
-                        {fileContents.Header}
+                        {stageFileContentContainer.Header}
                     </head>
                     <body>
-                        {fileContents.Intro}
+                        {stageFileContentContainer.Intro}
                         <div id='posts'>
                             {combinedPosts}
                         </div>
                         {(pageCount > 1 ? pagination : string.Empty)}
-                        {fileContents.Legal}
+                        {stageFileContentContainer.Legal}
                         <footer>
-                            {fileContents.Footer}
+                            {stageFileContentContainer.Footer}
                         </footer>
                     </body>
                 </html>",
@@ -114,33 +115,43 @@ public partial class BlogGenerator : IBlogGenerator
             );
     }
 
-    private async Task<FilesContentContainer> LoadFileContentsAsync(CancellationToken cancellationToken)
+    private async Task<StageFilesContentContainer> LoadStageFileContentsAsync(CancellationToken cancellationToken)
     {
-        await using var headerStream = _structureFileStorage.OpenReadStream(IStructureFileStorage.FILE_NAME_HEADER);
-        await using var introStream = _structureFileStorage.OpenReadStream(IStructureFileStorage.FILE_NAME_INTRO);
-        await using var legalStream = _structureFileStorage.OpenReadStream(IStructureFileStorage.FILE_NAME_LEGAL);
-        await using var footerStream = _structureFileStorage.OpenReadStream(IStructureFileStorage.FILE_NAME_FOOTER);
+        await using var headerStream = _stage.StructureDirectory
+           .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_HEADER)
+           .OpenRead();
+
+        await using var introStream = _stage.StructureDirectory
+           .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_INTRO)
+           .OpenRead();
+
+        await using var legalStream = _stage.StructureDirectory
+           .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_LEGAL)
+           .OpenRead();
+
+        await using var footerStream = _stage.StructureDirectory
+           .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_FOOTER)
+           .OpenRead();
 
         var structureFiles = await Task.WhenAll(
-            _structureFileStorage.LoadContentAsStringAsync(headerStream, cancellationToken),
-            _structureFileStorage.LoadContentAsStringAsync(introStream, cancellationToken),
-            _structureFileStorage.LoadContentAsStringAsync(legalStream, cancellationToken),
-            _structureFileStorage.LoadContentAsStringAsync(footerStream, cancellationToken)
+            headerStream.LoadAsStringAsync(cancellationToken),
+            introStream.LoadAsStringAsync(cancellationToken),
+            legalStream.LoadAsStringAsync(cancellationToken),
+            footerStream.LoadAsStringAsync(cancellationToken)
         );
 
         var postsFiles = await Task.WhenAll(
-            _postsFileStorage
-                .GetFileInfos()
-                .Select(f => f.Name)
-                .Order()
-                .Select(async fileName =>
+            _stage.PostsDirectory
+               .EnumerateFiles()
+               .OrderBy(f => f.Name)
+               .Select(async fileInfo =>
                 {
-                    await using var stream = _postsFileStorage.OpenReadStream(fileName);
-                    return await _postsFileStorage.LoadContentAsStringAsync(stream, cancellationToken);
+                    await using var stream = fileInfo.OpenRead();
+                    return await stream.LoadAsStringAsync(cancellationToken);
                 })
         );
 
-        return new FilesContentContainer(
+        return new StageFilesContentContainer(
             structureFiles[0],
             structureFiles[1],
             structureFiles[2],

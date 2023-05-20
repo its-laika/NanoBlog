@@ -1,21 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IAssetsFileStorage, AssetsFileStorage>();
+builder.Services.AddScoped<IStageDirectoryContainer, StageDirectoryContainer>();
 builder.Services.AddScoped<IBlogGenerator, BlogGenerator>();
-builder.Services.AddScoped<IExportFileStorage, ExportFileStorage>();
 builder.Services.AddScoped<IMimeTypeProvider, MimeTypeProvider>();
-builder.Services.AddScoped<IPostsFileStorage, PostsFileStorage>();
-builder.Services.AddScoped<IStructureFileStorage, StructureFileStorage>();
-builder.Services.AddScoped<IExportService, ExportService>();
-
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-{
-    builder.Services.AddScoped<IFileSystemSecurityService, WindowsFileSystemSecurityService>();
-}
-else
-{
-    builder.Services.AddScoped<IFileSystemSecurityService, UnixFileSystemSecurityService>();
-}
+builder.Services.AddScoped<IExportationService, ExportationService>();
 
 builder.Services.AddSingleton<IConfiguration>(_ =>
 {
