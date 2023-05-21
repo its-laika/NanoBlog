@@ -55,7 +55,7 @@ public class StructureController : ControllerBase
         await using var fileStream = _stage.StructureDirectory
            .TryFindFileInfo(fileName)?
            .EnsureFileMode()
-           .OpenWrite();
+           .OpenWriteStream();
 
         if (fileStream is null)
         {

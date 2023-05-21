@@ -120,7 +120,7 @@ public class AssetsController : ControllerBase
 
         await using var fileWriteStream = fileInfo
            .EnsureFileMode()
-           .OpenWrite();
+           .OpenWriteStream();
 
         await content.CopyToAsync(fileWriteStream, cancellationToken);
 

@@ -68,7 +68,7 @@ public class PostsController : ControllerBase
         await using var fileStream = _stage.PostsDirectory
            .TryFindFileInfo(fileName)?
            .EnsureFileMode()
-           .OpenWrite();
+           .OpenWriteStream();
 
         if (fileStream is null)
         {
