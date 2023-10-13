@@ -65,6 +65,8 @@ _footer.txt_|Can contain `<script>`s, footer etc.
 - optional: configure pagination and language in _NanoBlog/appsettings.json_
 - `dotnet run .`
 
+## TODOs
+- Some kind of administration site where you can write posts on the go.
 
 ## Issues, help or security related stuff
 If you want to give me any relevant information to this project, feel free to either create an issue or write me a mail.
