@@ -107,12 +107,15 @@ paths:
       summary: Stores new asset
       description: Stores new asset by given file
       requestBody:
-        description: File to be stored
         content:
-          image/*:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                file:
+                  description: File to be stored as form data string
+                  type: string
+                  format: binary
         required: true
       responses:
         '201':
