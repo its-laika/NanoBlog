@@ -25,7 +25,7 @@ public partial class BlogGenerator : IBlogGenerator
             ? _configuration.PageSize
             : null;
 
-        var chunks = pageSize is { } chunkSize
+        var chunks = pageSize is { } chunkSize && fileContents.Posts.Any()
             ? new List<IEnumerable<string>>(fileContents.Posts.Chunk(chunkSize).ToList())
             : new List<IEnumerable<string>> { fileContents.Posts };
 
@@ -58,6 +58,10 @@ public partial class BlogGenerator : IBlogGenerator
            .Where(post => !string.IsNullOrWhiteSpace(post))
            .Aggregate(new StringBuilder(), (carry, post) => carry.Append(post))
            .ToString();
+
+        var posts = !string.IsNullOrWhiteSpace(combinedPosts)
+            ? $"<div id='posts'>{combinedPosts}</div>"
+            : string.Empty;
 
         const int firstPageNumber = 0;
         var lastPageNumber = pageCount - 1;
@@ -101,9 +105,7 @@ public partial class BlogGenerator : IBlogGenerator
                     </head>
                     <body>
                         {stageFileContentContainer.Intro}
-                        <div id='posts'>
-                            {combinedPosts}
-                        </div>
+                        {posts}
                         {(pageCount > 1 ? pagination : string.Empty)}
                         {stageFileContentContainer.Legal}
                         <footer>
