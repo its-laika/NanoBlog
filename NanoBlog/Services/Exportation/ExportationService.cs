@@ -4,14 +4,17 @@ public class ExportationService : IExportationService
 {
     private readonly IBlogGenerator _blogGenerator;
     private readonly IStageDirectoryContainer _stage;
+    private readonly IConfiguration _configuration;
 
     public ExportationService(
         IBlogGenerator blogGenerator,
-        IStageDirectoryContainer stage
+        IStageDirectoryContainer stage,
+        IConfiguration configuration
     )
     {
         _blogGenerator = blogGenerator;
         _stage = stage;
+        _configuration = configuration;
     }
 
     public async Task ExportAsync(CancellationToken cancellationToken)
@@ -21,7 +24,10 @@ public class ExportationService : IExportationService
             archivePageContents
             ) = await _blogGenerator.GeneratePageContentsAsync(cancellationToken);
 
-        _stage.ExportDirectory.Clear();
+        _stage.ExportDirectory.Clear(
+            _configuration.ExportKeepFileNames,
+            StringComparer.InvariantCultureIgnoreCase
+        );
 
         await Task.WhenAll(
             _stage.AssetsDirectory

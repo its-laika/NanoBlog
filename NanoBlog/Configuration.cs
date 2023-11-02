@@ -8,6 +8,7 @@ public class Configuration : IConfiguration
     public int PageSize { get; init; } = IConfiguration.DEFAULT_PAGE_SIZE;
     public string Language { get; init; } = IConfiguration.DEFAULT_LANGUAGE;
     public string BlogRootServerDirectory { get; init; } = IConfiguration.DEFAULT_BLOG_ROOT_SERVER_DIRECTORY;
+    public ICollection<string> ExportKeepFileNames { get; } = new List<string>();
 
     public static DirectoryInfo GetStageAssetsDirectoryInfo()
     {

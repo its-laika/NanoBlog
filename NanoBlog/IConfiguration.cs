@@ -27,4 +27,5 @@ public interface IConfiguration
     public int PageSize { get; }
     public string Language { get; }
     public string BlogRootServerDirectory { get; }
+    public ICollection<string> ExportKeepFileNames { get; }
 }

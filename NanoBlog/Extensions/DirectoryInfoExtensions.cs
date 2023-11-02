@@ -59,17 +59,31 @@ public static class DirectoryInfoExtensions
         return fileStream;
     }
 
-    public static void Clear(this DirectoryInfo directoryInfo)
+    public static void Clear(
+        this DirectoryInfo directoryInfo,
+        ICollection<string> keepNames,
+        StringComparer nameStringComparer
+    )
     {
         directoryInfo.Refresh();
 
         foreach (var fileInfo in directoryInfo.EnumerateFiles())
         {
+            if (keepNames?.Contains(fileInfo.Name, nameStringComparer) == true)
+            {
+                continue;
+            }
+
             fileInfo.Delete();
         }
 
         foreach (var subDirectoryInfo in directoryInfo.EnumerateDirectories())
         {
+            if (keepNames?.Contains(subDirectoryInfo.Name, nameStringComparer) == true)
+            {
+                continue;
+            }
+
             Directory.Delete(subDirectoryInfo.FullName, true);
         }
     }
