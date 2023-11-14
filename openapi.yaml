@@ -3,13 +3,13 @@ info:
   title: neon-js/NanoBlog
   description: |-
     A simplistic blogging system
-    NanoBlog is a blogging system on file basis, therefore it doesn't use a database, cookies or even subpages.
+    NanoBlog is a blogging system on file basis, therefore it doesn't use a database, scripting or cookies.
   contact:
     email: github+curly@likely.gay
   license:
     name: MIT
     url: https://github.com/neon-JS/NanoBlog/blob/main/LICENSE
-  version: 0.0.4
+  version: 0.0.12
 externalDocs:
   description: Github repository
   url: https://github.com/neon-JS/NanoBlog
