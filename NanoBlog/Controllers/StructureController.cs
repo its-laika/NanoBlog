@@ -2,24 +2,15 @@ namespace NanoBlog.Controllers;
 
 [ApiController]
 [Route("structure")]
-public class StructureController : ControllerBase
+public class StructureController(
+    IStageDirectoryContainer stage,
+    ILogger<StructureController> logger
+) : ControllerBase
 {
-    private readonly IStageDirectoryContainer _stage;
-    private readonly ILogger<StructureController> _logger;
-
-    public StructureController(
-        IStageDirectoryContainer stage,
-        ILogger<StructureController> logger
-    )
-    {
-        _stage = stage;
-        _logger = logger;
-    }
-
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _stage.StructureDirectory
+        var fileNames = stage.StructureDirectory
            .EnumerateFiles()
            .Select(f => f.Name)
            .OrderDescending();
@@ -33,7 +24,7 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _stage.StructureDirectory
+        await using var fileStream = stage.StructureDirectory
            .TryFindFileInfo(fileName)?
            .OpenRead();
 
@@ -52,7 +43,7 @@ public class StructureController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _stage.StructureDirectory
+        await using var fileStream = stage.StructureDirectory
            .TryFindFileInfo(fileName)?
            .EnsureFileMode()
            .OpenWriteStream();
@@ -63,7 +54,7 @@ public class StructureController : ControllerBase
         }
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
-        _logger.LogInformation("Structure file {fileName} has been updated", fileName);
+        logger.LogInformation("Structure file {fileName} has been updated", fileName);
 
         return NoContent();
     }

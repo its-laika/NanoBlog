@@ -3,12 +3,7 @@ namespace NanoBlog.Test.Attributes.AuthenticationActionFilter;
 public class OnActionExecuting
 {
     private const string _TOKEN_VALUE = "test To@ken 123";
-    private readonly NanoBlog.Attributes.AuthenticationActionFilter _sut;
-
-    public OnActionExecuting()
-    {
-        _sut = new NanoBlog.Attributes.AuthenticationActionFilter(_TOKEN_VALUE);
-    }
+    private readonly NanoBlog.Attributes.AuthenticationActionFilter _sut = new(_TOKEN_VALUE);
 
     [Fact]
     public void ShouldWorkWithCorrectHeader()
@@ -87,7 +82,7 @@ public class OnActionExecuting
 
         if (authenticationToken is not null)
         {
-            httpContext.Request.Headers.Add(HeaderNames.Authorization, new StringValues(authenticationToken));
+            httpContext.Request.Headers.TryAdd(HeaderNames.Authorization, new StringValues(authenticationToken));
         }
 
         var actionExecutedContext = new ResourceExecutingContext(

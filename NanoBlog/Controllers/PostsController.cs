@@ -2,24 +2,15 @@ namespace NanoBlog.Controllers;
 
 [ApiController]
 [Route("posts")]
-public class PostsController : ControllerBase
+public class PostsController(
+    IStageDirectoryContainer stage,
+    ILogger<PostsController> logger
+) : ControllerBase
 {
-    private readonly IStageDirectoryContainer _stage;
-    private readonly ILogger<PostsController> _logger;
-
-    public PostsController(
-        IStageDirectoryContainer stage,
-        ILogger<PostsController> logger
-    )
-    {
-        _stage = stage;
-        _logger = logger;
-    }
-
     [HttpGet]
     public IActionResult GetFileNames()
     {
-        var fileNames = _stage.PostsDirectory
+        var fileNames = stage.PostsDirectory
            .EnumerateFiles()
            .Select(f => f.Name)
            .OrderDescending();
@@ -32,10 +23,10 @@ public class PostsController : ControllerBase
     {
         var fileName = $"{DateTime.UtcNow.Ticks}-{Guid.NewGuid()}.txt";
 
-        await using var fileStream = _stage.PostsDirectory.CreateFile(fileName);
+        await using var fileStream = stage.PostsDirectory.CreateFile(fileName);
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        _logger.LogInformation("Post {fileName} has been created", fileName);
+        logger.LogInformation("Post {fileName} has been created", fileName);
         return CreatedAtAction("GetFileContent", new { fileName }, null);
     }
 
@@ -45,7 +36,7 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _stage.PostsDirectory
+        await using var fileStream = stage.PostsDirectory
            .TryFindFileInfo(fileName)?
            .OpenRead();
 
@@ -65,7 +56,7 @@ public class PostsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await using var fileStream = _stage.PostsDirectory
+        await using var fileStream = stage.PostsDirectory
            .TryFindFileInfo(fileName)?
            .EnsureFileMode()
            .OpenWriteStream();
@@ -77,21 +68,21 @@ public class PostsController : ControllerBase
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        _logger.LogInformation("Post {fileName} has been updated", fileName);
+        logger.LogInformation("Post {fileName} has been updated", fileName);
         return NoContent();
     }
 
     [HttpDelete("{fileName}")]
     public IActionResult DeleteFileAsync([ValidFileName.Text] string fileName)
     {
-        if (!_stage.PostsDirectory.HasFile(fileName))
+        if (!stage.PostsDirectory.HasFile(fileName))
         {
             return NotFound();
         }
 
-        _stage.PostsDirectory.DeleteFile(fileName);
+        stage.PostsDirectory.DeleteFile(fileName);
 
-        _logger.LogInformation("Post {fileName} has been deleted", fileName);
+        logger.LogInformation("Post {fileName} has been deleted", fileName);
         return NoContent();
     }
 }

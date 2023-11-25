@@ -3,34 +3,19 @@ namespace NanoBlog.Attributes;
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
 public partial class ValidFileName : ValidationAttribute
 {
-    public class Text : ValidFileName
-    {
-        public Text() : base(TextRegex())
-        {
-        }
-    }
+    public class Text() : ValidFileName(TextRegex());
 
-    public class Asset : ValidFileName
-    {
-        public Asset() : base(AssetRegex())
-        {
-        }
-    }
+    public class Asset() : ValidFileName(AssetRegex());
 
-    public class All : ValidFileName
-    {
-        public All() : base(AllRegex())
-        {
-        }
-    }
+    public class All() : ValidFileName(AllRegex());
 
-    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif|svg)$")]
+    [GeneratedRegex(@"^[A-Za-z0-9\-]+\.(png|jpg|jpeg|gif|svg)$")]
     private static partial Regex AssetRegex();
 
-    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.txt$")]
+    [GeneratedRegex(@"^[A-Za-z0-9\-]+\.txt$")]
     private static partial Regex TextRegex();
 
-    [GeneratedRegex("^[A-Za-z0-9\\-]+\\.(png|jpg|jpeg|gif|svg|txt|html)")]
+    [GeneratedRegex(@"^[A-Za-z0-9\-]+\.(png|jpg|jpeg|gif|svg|txt|html)")]
     private static partial Regex AllRegex();
 
     private const int _MAX_FILE_LENGTH = 100;

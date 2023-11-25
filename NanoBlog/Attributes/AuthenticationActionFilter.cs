@@ -1,15 +1,8 @@
 namespace NanoBlog.Attributes;
 
-public class AuthenticationActionFilter : IResourceFilter
+public class AuthenticationActionFilter(string configuredAuthenticationToken) : IResourceFilter
 {
     private const string _AUTHENTICATION_HEADER_BEARER_PREFIX = "Bearer ";
-
-    private readonly string _configuredAuthenticationToken;
-
-    public AuthenticationActionFilter(string configuredAuthenticationToken)
-    {
-        _configuredAuthenticationToken = configuredAuthenticationToken;
-    }
 
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
@@ -28,7 +21,7 @@ public class AuthenticationActionFilter : IResourceFilter
 
         var givenAuthenticationToken = token[_AUTHENTICATION_HEADER_BEARER_PREFIX.Length..].Trim();
 
-        if (!givenAuthenticationToken.Equals(_configuredAuthenticationToken, StringComparison.InvariantCulture))
+        if (!givenAuthenticationToken.Equals(configuredAuthenticationToken, StringComparison.InvariantCulture))
         {
             context.Result = new UnauthorizedResult();
         }

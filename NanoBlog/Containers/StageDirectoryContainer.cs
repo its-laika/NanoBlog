@@ -3,17 +3,16 @@ namespace NanoBlog.Containers;
 internal class StageDirectoryContainer : IStageDirectoryContainer
 {
     public DirectoryInfo AssetsDirectory { get; }
-    public DirectoryInfo ExportDirectory { get; }
-    public DirectoryInfo PostsDirectory { get; }
-    public DirectoryInfo StructureDirectory { get; }
+        = EnsureExisting(Configuration.GetStageAssetsDirectoryInfo());
 
-    public StageDirectoryContainer()
-    {
-        AssetsDirectory = EnsureExisting(Configuration.GetStageAssetsDirectoryInfo());
-        ExportDirectory = EnsureExisting(Configuration.GetExportDirectoryInfo());
-        PostsDirectory = EnsureExisting(Configuration.GetStagePostsDirectoryInfo());
-        StructureDirectory = EnsureExisting(Configuration.GetStageStructureDirectoryInfo());
-    }
+    public DirectoryInfo ExportDirectory { get; }
+        = EnsureExisting(Configuration.GetExportDirectoryInfo());
+
+    public DirectoryInfo PostsDirectory { get; }
+        = EnsureExisting(Configuration.GetStagePostsDirectoryInfo());
+
+    public DirectoryInfo StructureDirectory { get; }
+        = EnsureExisting(Configuration.GetStageStructureDirectoryInfo());
 
     private static DirectoryInfo EnsureExisting(DirectoryInfo directoryInfo)
     {

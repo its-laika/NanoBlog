@@ -1,28 +1,19 @@
 namespace NanoBlog.Services.Generation;
 
-public partial class BlogGenerator : IBlogGenerator
+public partial class BlogGenerator(
+    IStageDirectoryContainer stage,
+    IConfiguration configuration
+) : IBlogGenerator
 {
-    private readonly IStageDirectoryContainer _stage;
-    private readonly IConfiguration _configuration;
-
-    [GeneratedRegex("\\s{2,}")]
+    [GeneratedRegex(@"\s{2,}")]
     private static partial Regex ReduceSpacingRegex();
-
-    public BlogGenerator(
-        IStageDirectoryContainer stage,
-        IConfiguration configuration
-    )
-    {
-        _stage = stage;
-        _configuration = configuration;
-    }
 
     public async Task<GeneratedPageContentsContainer> GeneratePageContentsAsync(CancellationToken cancellationToken)
     {
         var fileContents = await LoadStageFileContentsAsync(cancellationToken);
 
-        int? pageSize = _configuration.UsePagination
-            ? _configuration.PageSize
+        int? pageSize = configuration.UsePagination
+            ? configuration.PageSize
             : null;
 
         var chunks = pageSize is { } chunkSize && fileContents.Posts.Any()
@@ -99,7 +90,7 @@ public partial class BlogGenerator : IBlogGenerator
         return ReduceSpacingRegex()
            .Replace($@"
                 <!DOCTYPE html>
-                <html lang='{_configuration.Language}'>
+                <html lang='{configuration.Language}'>
                     <head>
                         {stageFileContentContainer.Header}
                     </head>
@@ -119,19 +110,19 @@ public partial class BlogGenerator : IBlogGenerator
 
     private async Task<StageFilesContentContainer> LoadStageFileContentsAsync(CancellationToken cancellationToken)
     {
-        await using var headerStream = _stage.StructureDirectory
+        await using var headerStream = stage.StructureDirectory
            .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_HEADER)
            .OpenRead();
 
-        await using var introStream = _stage.StructureDirectory
+        await using var introStream = stage.StructureDirectory
            .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_INTRO)
            .OpenRead();
 
-        await using var legalStream = _stage.StructureDirectory
+        await using var legalStream = stage.StructureDirectory
            .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_LEGAL)
            .OpenRead();
 
-        await using var footerStream = _stage.StructureDirectory
+        await using var footerStream = stage.StructureDirectory
            .FindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_FOOTER)
            .OpenRead();
 
@@ -143,7 +134,7 @@ public partial class BlogGenerator : IBlogGenerator
         );
 
         var postsFiles = await Task.WhenAll(
-            _stage.PostsDirectory
+            stage.PostsDirectory
                .EnumerateFiles()
                .OrderBy(f => f.Name)
                .Select(async fileInfo =>
@@ -166,11 +157,11 @@ public partial class BlogGenerator : IBlogGenerator
     {
         if (pageNumber == pageCount - 1)
         {
-            return _configuration.BlogRootServerDirectory;
+            return configuration.BlogRootServerDirectory;
         }
 
         return Path.Combine(
-            _configuration.BlogRootServerDirectory,
+            configuration.BlogRootServerDirectory,
             IConfiguration.ARCHIVE_DIRECTORY_NAME,
             pageNumber.ToString(IConfiguration.ARCHIVE_INDEX_FORMAT)
         );
