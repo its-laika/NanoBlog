@@ -36,6 +36,16 @@ public class OnActionExecuting
     }
 
     [Fact]
+    public void ShouldReturnUnauthorizedWithMissingBearerKeyword()
+    {
+        var context = BuildContext(_TOKEN_VALUE);
+
+        _sut.OnResourceExecuting(context);
+
+        context.Result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    [Fact]
     public void ShouldReturnUnauthorizedWithMissingHeader()
     {
         var context = BuildContext(null);
@@ -48,7 +58,7 @@ public class OnActionExecuting
     [Fact]
     public void ShouldReturnUnauthorizedWithInvalidToken()
     {
-        var context = BuildContext("somethingElse");
+        var context = BuildContext("Bearer somethingElse");
 
         _sut.OnResourceExecuting(context);
 
@@ -58,9 +68,20 @@ public class OnActionExecuting
     [Fact]
     public void ShouldReturnUnauthorizedWithInvalidTokenCasing()
     {
-        var context = BuildContext(_TOKEN_VALUE.ToUpper());
+        var context = BuildContext("Bearer " + _TOKEN_VALUE.ToUpper());
 
         _sut.OnResourceExecuting(context);
+
+        context.Result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    [Fact]
+    public void ShouldReturnUnauthorizedWithEmptyToken()
+    {
+        var sut = new NanoBlog.Attributes.AuthenticationActionFilter(string.Empty);
+        var context = BuildContext("Bearer ");
+
+        sut.OnResourceExecuting(context);
 
         context.Result.Should().BeOfType<UnauthorizedResult>();
     }

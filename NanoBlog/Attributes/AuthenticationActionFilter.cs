@@ -21,6 +21,12 @@ public class AuthenticationActionFilter(string configuredAuthenticationToken) : 
 
         var givenAuthenticationToken = token[_AUTHENTICATION_HEADER_BEARER_PREFIX.Length..].Trim();
 
+        if (string.IsNullOrEmpty(givenAuthenticationToken))
+        {
+            context.Result = new UnauthorizedResult();
+            return;
+        }
+
         if (!givenAuthenticationToken.Equals(configuredAuthenticationToken, StringComparison.InvariantCulture))
         {
             context.Result = new UnauthorizedResult();
