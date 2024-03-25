@@ -1,13 +1,10 @@
 namespace NanoBlog.Services.Generation;
 
-public partial class BlogGenerator(
+public class BlogGenerator(
     IStageDirectoryContainer stage,
     IConfiguration configuration
 ) : IBlogGenerator
 {
-    [GeneratedRegex(@"\s{2,}")]
-    private static partial Regex ReduceSpacingRegex();
-
     public async Task<GeneratedPageContentsContainer> GeneratePageContentsAsync(CancellationToken cancellationToken)
     {
         var fileContents = await LoadStageFileContentsAsync(cancellationToken);
@@ -17,7 +14,7 @@ public partial class BlogGenerator(
             : null;
 
         var chunks = pageSize is { } chunkSize && fileContents.Posts.Any()
-            ? new List<IEnumerable<string>>(fileContents.Posts.Chunk(chunkSize).ToList())
+            ? [..fileContents.Posts.Chunk(chunkSize).ToList()]
             : new List<IEnumerable<string>> { fileContents.Posts };
 
         var pages = chunks
@@ -71,7 +68,8 @@ public partial class BlogGenerator(
             ? BuildPageLink(followingPageNumber, pageCount)
             : "#";
 
-        var pagination = $@"
+        var pagination = 
+            $"""
              <nav id='pagination' aria-label='pagination'>
                 <ul>
                     <li class='pagination-link previous {(isFirstPage ? "same-page" : string.Empty)}'>
@@ -85,27 +83,27 @@ public partial class BlogGenerator(
                     </li>
                 </ul>
              </nav>
-        ";
+             """;
 
-        return ReduceSpacingRegex()
-           .Replace($@"
-                <!DOCTYPE html>
-                <html lang='{configuration.Language}'>
-                    <head>
-                        {stageFileContentContainer.Header}
-                    </head>
-                    <body>
-                        {stageFileContentContainer.Intro}
-                        {posts}
-                        {(pageCount > 1 ? pagination : string.Empty)}
-                        {stageFileContentContainer.Legal}
-                        <footer>
-                            {stageFileContentContainer.Footer}
-                        </footer>
-                    </body>
-                </html>",
-                " "
-            );
+        return 
+            $"""
+             <!DOCTYPE html>
+             <html lang='{configuration.Language}'>
+                <head>
+                    {stageFileContentContainer.Header}
+                </head>
+                 <body>
+                    {stageFileContentContainer.Intro}
+                    {posts}
+                    {(pageCount > 1 ? pagination : string.Empty)}
+                    {stageFileContentContainer.Legal}
+                    <footer>
+                        {stageFileContentContainer.Footer}
+                    </footer>
+                 </body>
+             </html>
+             """
+           .NormalizeWhitespaces();
     }
 
     private async Task<StageFilesContentContainer> LoadStageFileContentsAsync(CancellationToken cancellationToken)
