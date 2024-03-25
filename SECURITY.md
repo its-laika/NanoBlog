@@ -7,7 +7,8 @@ Support is limited to the latest tagged version and also the current state in th
 | Version       | Supported          |
 |---------------|--------------------|
 | main / latest | :white_check_mark: |
-| 0.0.12        | :white_check_mark: |
+| 0.0.13        | :white_check_mark: |
+| 0.0.12        | :x:                |
 | 0.0.11        | :x:                |
 | 0.0.10        | :x:                |
 | < 0.0.10      | :x:                |
