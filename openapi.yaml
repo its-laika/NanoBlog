@@ -66,6 +66,24 @@ components:
               type: string
               description: File name
               example: 638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.png
+    PostExcerpts:
+      description: Responded with a list of post excerpts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              description: Post excerpt
+              properties:
+                name:
+                  type: string
+                  description: Post file name
+                  example: 638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.txt
+                excerpt:
+                  type: string
+                  description: Excerpt of the post
+                  example: <p>Lorem ipsum</p>
   schemas:
     Error:
       type: object
@@ -100,7 +118,7 @@ paths:
         '200':
           $ref: '#/components/responses/FileList'
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
     post:
       tags:
         - assets
@@ -119,7 +137,7 @@ paths:
         required: true
       responses:
         '201':
-          $ref: '#/components/responses/CreatedAt' 
+          $ref: '#/components/responses/CreatedAt'
         '400':
           $ref: '#/components/responses/MimeTypeError'
         '401':
@@ -146,7 +164,7 @@ paths:
                 type: string
                 format: binary
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -175,7 +193,7 @@ paths:
         '400':
           $ref: '#/components/responses/MimeTypeError'
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
@@ -194,7 +212,7 @@ paths:
         '201':
           description: Successful operation
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
   /posts:
@@ -207,7 +225,7 @@ paths:
         '200':
           $ref: '#/components/responses/FileList'
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
     post:
       tags:
         - posts
@@ -224,7 +242,7 @@ paths:
         '201':
           $ref: '#/components/responses/CreatedAt'
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
   /posts/{fileName}:
     get:
       parameters:
@@ -247,7 +265,7 @@ paths:
                 type: string
                 example: "<h1>title</h1>this is my content"
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -273,7 +291,7 @@ paths:
         '201':
           description: Successful operation
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
@@ -292,7 +310,52 @@ paths:
         '201':
           description: Successful operation
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /posts/index/{index}:
+    get:
+      parameters:
+        - name: index
+          in: path
+          description: Index of post. May be negative to get the (n'th - 1) last post
+          required: true
+          schema:
+            type: number
+      tags:
+        - posts
+      summary: Returns post content
+      description: Returns content by post index
+      responses:
+        '200':
+          description: Stored post content
+          content:
+            text/html:
+              schema:
+                type: string
+                example: "<h1>title</h1>this is my content"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /posts/excerpts:
+    get:
+      parameters:
+        - name: length
+          in: query
+          description: Max length of post excerpt
+          required: false
+          schema:
+            type: number
+      tags:
+        - posts
+      summary: Returns excerpts of all posts
+      description: Returns excerpts of all posts with post file name
+      responses:
+        '200':
+          $ref: '#/components/responses/PostExcerpts'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
   /structure:
@@ -305,7 +368,7 @@ paths:
         '200':
           $ref: '#/components/responses/FileList'
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
   /structure/{fileName}:
     get:
       parameters:
@@ -328,7 +391,7 @@ paths:
                 type: string
                 example: "<h1>title</h1>this is my content"
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -354,7 +417,7 @@ paths:
         '201':
           description: Successful operation
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
   /export:
@@ -367,7 +430,7 @@ paths:
         '201':
           description: Successful operation
         '401':
-          $ref: '#/components/responses/Unauthorized' 
+          $ref: '#/components/responses/Unauthorized'
   /preview:
     get:
       tags:

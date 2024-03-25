@@ -8,6 +8,7 @@ global using NanoBlog.Services.Exportation;
 global using NanoBlog.Extensions;
 global using NanoBlog.Services.Generation;
 global using NanoBlog.Services.MimeTypes;
+global using NanoBlog.Services.Posts;
 global using System.ComponentModel.DataAnnotations;
 global using System.Runtime.InteropServices;
 global using System.Text;

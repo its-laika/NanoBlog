@@ -7,6 +7,22 @@ public static class FileStreamExtensions
         using var streamReader = new StreamReader(fileStream);
         return await streamReader.ReadToEndAsync(cancellationToken);
     }
+    
+    public static async Task<string> LoadAsStringAsync(
+        this FileStream fileStream, 
+        uint length,
+        CancellationToken cancellationToken
+        )
+    {
+        var buffer = new byte[length];
+
+        var readBytes = await fileStream.ReadAsync(
+            buffer.AsMemory(0, buffer.Length), 
+            cancellationToken
+        );
+
+        return Encoding.UTF8.GetString(buffer[..readBytes]);
+    }
 
     public static async Task<byte[]> LoadAsBytesAsync(this FileStream fileStream, CancellationToken cancellationToken)
     {

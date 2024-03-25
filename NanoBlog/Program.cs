@@ -4,6 +4,7 @@ builder.Services.AddScoped<IStageDirectoryContainer, StageDirectoryContainer>();
 builder.Services.AddScoped<IBlogGenerator, BlogGenerator>();
 builder.Services.AddScoped<IMimeTypeProvider, MimeTypeProvider>();
 builder.Services.AddScoped<IExportationService, ExportationService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddSingleton<IConfiguration>(_ =>
 {

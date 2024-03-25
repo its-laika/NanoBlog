@@ -4,7 +4,8 @@ namespace NanoBlog.Controllers;
 [Route("posts")]
 public class PostsController(
     IStageDirectoryContainer stage,
-    ILogger<PostsController> logger
+    ILogger<PostsController> logger,
+    IPostService postService
 ) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +19,20 @@ public class PostsController(
         return Ok(fileNames);
     }
 
+    [HttpGet("excerpts")]
+    public async Task<IActionResult> GetExcerptsAsync(
+        [FromQuery] uint? length,
+        CancellationToken cancellationToken
+    )
+    {
+        return Ok(
+            await postService.LoadExcerptsAsync(
+                length ?? IPostService.EXCERPT_LENGTH_DEFAULT,
+                cancellationToken
+            )
+        );
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
@@ -28,6 +43,25 @@ public class PostsController(
 
         logger.LogInformation("Post {fileName} has been created", fileName);
         return CreatedAtAction("GetFileContent", new { fileName }, null);
+    }
+
+    [HttpGet("index/{index:int}")]
+    public async Task<IActionResult> GetFileByIndexContentAsync(
+        int index,
+        CancellationToken cancellationToken
+    )
+    {
+        var content = await postService.LoadPostContentByIndexAsync(
+            index,
+            cancellationToken
+        );
+
+        if (content is null)
+        {
+            return NotFound();
+        }
+
+        return Content(content, "text/html");
     }
 
     [HttpGet("{fileName}")]
