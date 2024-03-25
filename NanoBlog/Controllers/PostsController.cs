@@ -21,7 +21,7 @@ public class PostsController(
 
     [HttpGet("excerpts")]
     public async Task<IActionResult> GetExcerptsAsync(
-        [FromQuery] uint? length,
+        [FromQuery] int? length,
         CancellationToken cancellationToken
     )
     {

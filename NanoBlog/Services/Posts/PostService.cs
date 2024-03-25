@@ -1,9 +1,12 @@
 namespace NanoBlog.Services.Posts;
 
-public class PostService(
+public partial class PostService(
     IStageDirectoryContainer stage
 ) : IPostService
 {
+    [GeneratedRegex(@"\s{1,}")]
+    private static partial Regex NormalizeWhitespaceRegex();
+
     public async Task<string?> LoadPostContentByIndexAsync(
         int index,
         CancellationToken cancellationToken
@@ -20,7 +23,7 @@ public class PostService(
     }
 
     public async Task<IEnumerable<PostExcerpt>> LoadExcerptsAsync(
-        uint excerptLength,
+        int excerptLength,
         CancellationToken cancellationToken
     )
     {
@@ -34,7 +37,8 @@ public class PostService(
         {
             await using var fileStream = fileInfo.OpenRead();
 
-            var excerpt = await fileStream.LoadAsStringAsync(
+            var excerpt = await GenerateExcerptAsync(
+                fileStream,
                 excerptLength,
                 cancellationToken
             );
@@ -65,5 +69,18 @@ public class PostService(
            .OrderByDescending(f => f.Name)
            .Skip(reverseIndex)
            .FirstOrDefault();
+    }
+
+    private static async Task<string> GenerateExcerptAsync(
+        FileStream fileStream,
+        int length,
+        CancellationToken cancellationToken
+    )
+    {
+        var content = await fileStream.LoadAsStringAsync(cancellationToken);
+
+        return NormalizeWhitespaceRegex()
+           .Replace(content, " ")
+           .Truncate(length);
     }
 }

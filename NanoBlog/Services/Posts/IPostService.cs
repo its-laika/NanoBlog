@@ -2,7 +2,7 @@ namespace NanoBlog.Services.Posts;
 
 public interface IPostService
 {
-    public const uint EXCERPT_LENGTH_DEFAULT = 50;
+    public const int EXCERPT_LENGTH_DEFAULT = 50;
 
     Task<string?> LoadPostContentByIndexAsync(
         int index,
@@ -10,7 +10,7 @@ public interface IPostService
     );
 
     Task<IEnumerable<PostExcerpt>> LoadExcerptsAsync(
-        uint excerptLength,
+        int excerptLength,
         CancellationToken cancellationToken
     );
 }
