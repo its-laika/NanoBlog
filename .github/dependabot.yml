@@ -3,6 +3,8 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore: "
+      interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
