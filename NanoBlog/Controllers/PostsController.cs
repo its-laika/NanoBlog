@@ -33,6 +33,41 @@ public class PostsController(
         );
     }
 
+    [HttpGet("template")]
+    public async Task<IActionResult> GetPostTemplateAsync(CancellationToken cancellationToken)
+    {
+        await using var fileStream = stage.StructureDirectory
+           .TryFindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE)?
+           .OpenRead();
+
+        if (fileStream is null)
+        {
+            return NotFound();
+        }
+
+        var content = await fileStream.LoadAsStringAsync(cancellationToken);
+        return Content(content, "text/html");
+    }
+
+    [HttpPut("template")]
+    public async Task<IActionResult> UpdatePostTemplateAsync(CancellationToken cancellationToken)
+    {
+        await using var fileStream = stage.StructureDirectory
+           .TryFindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE)?
+           .EnsureFileMode()
+           .OpenWriteStream();
+
+        if (fileStream is null)
+        {
+            return NotFound();
+        }
+
+        await Request.Body.CopyToAsync(fileStream, cancellationToken);
+
+        logger.LogInformation("Post template has been updated");
+        return NoContent();
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreatePostAsync(CancellationToken cancellationToken)
     {
@@ -43,25 +78,6 @@ public class PostsController(
 
         logger.LogInformation("Post {fileName} has been created", fileName);
         return CreatedAtAction("GetFileContent", new { fileName }, null);
-    }
-
-    [HttpGet("index/{index:int}")]
-    public async Task<IActionResult> GetFileByIndexContentAsync(
-        int index,
-        CancellationToken cancellationToken
-    )
-    {
-        var content = await postService.LoadPostContentByIndexAsync(
-            index,
-            cancellationToken
-        );
-
-        if (content is null)
-        {
-            return NotFound();
-        }
-
-        return Content(content, "text/html");
     }
 
     [HttpGet("{fileName}")]

@@ -12,6 +12,7 @@ public interface IConfiguration
     public const string STAGE_STRUCTURE_FILE_NAME_INTRO = "intro.txt";
     public const string STAGE_STRUCTURE_FILE_NAME_LEGAL = "legal.txt";
     public const string STAGE_STRUCTURE_FILE_NAME_FOOTER = "footer.txt";
+    public const string STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE = "post-template.txt";
 
     protected const string STAGE_ASSETS_DIRECTORY_NAME = "BlogFiles/Assets";
     protected const string STAGE_POSTS_DIRECTORY_NAME = "BlogFiles/Posts";

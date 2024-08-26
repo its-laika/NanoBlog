@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: neon-js/NanoBlog
   description: |-
@@ -9,12 +9,12 @@ info:
   license:
     name: MIT
     url: https://github.com/neon-JS/NanoBlog/blob/main/LICENSE
-  version: 0.0.12
+  version: 0.0.14
 externalDocs:
   description: Github repository
   url: https://github.com/neon-JS/NanoBlog
 servers:
-  - url: http://localhost:5023/
+  - url: http://localhost:5023/api/
 tags:
   - name: assets
     description: Control files that can be included into the blog
@@ -36,19 +36,19 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     Unauthorized:
       description: Unauthorized
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     MimeTypeError:
       description: MIME type error (e.g. MIME type is not identifiable or MIME types differ when trying to update existing asset)
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     CreatedAt:
       description: A resource was created successfully
       headers:
@@ -65,7 +65,8 @@ components:
             items:
               type: string
               description: File name
-              example: 638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.png
+              examples:
+                - "638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.png"
     PostExcerpts:
       description: Responded with a list of post excerpts
       content:
@@ -79,27 +80,33 @@ components:
                 name:
                   type: string
                   description: Post file name
-                  example: 638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.txt
+                  examples:
+                    - "638075963053552470-0747b6f6-c677-49fb-bbde-53addf7b3b71.txt"
                 excerpt:
                   type: string
                   description: Excerpt of the post
-                  example: <p>Lorem ipsum</p>
+                  examples:
+                    - "<p>Lorem ipsum</p>"
   schemas:
     Error:
       type: object
       properties:
         type:
           type: string
-          example: https://www.rfc-editor.org/rfc/rfc2324#section-2.3.2
+          examples:
+            - "https://www.rfc-editor.org/rfc/rfc2324#section-2.3.2"
         title:
           type: string
-          example: I'm a teapot
+          examples:
+            - "I'm a teapot"
         status:
           type: number
-          example: 418
+          examples:
+            - 418
         traceId:
           type: string
-          example: 00-420b7c937b9403217d4b8e97be0bef05-024ecd9aa651ee47-00
+          examples:
+            - "00-420b7c937b9403217d4b8e97be0bef05-024ecd9aa651ee47-00"
       required:
         - type
         - title
@@ -115,10 +122,10 @@ paths:
       summary: Gets list of assets
       description: Gets list of all stored assets names
       responses:
-        '200':
-          $ref: '#/components/responses/FileList'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "200":
+          $ref: "#/components/responses/FileList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
       tags:
         - assets
@@ -136,12 +143,12 @@ paths:
                   format: binary
         required: true
       responses:
-        '201':
-          $ref: '#/components/responses/CreatedAt'
-        '400':
-          $ref: '#/components/responses/MimeTypeError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "201":
+          $ref: "#/components/responses/CreatedAt"
+        "400":
+          $ref: "#/components/responses/MimeTypeError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /assets/{fileName}:
     get:
       parameters:
@@ -156,17 +163,17 @@ paths:
       summary: Returns assets file content
       description: Returns file content by asset file name
       responses:
-        '200':
+        "200":
           description: Stored asset file
           content:
             image/*:
               schema:
                 type: string
                 format: binary
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     put:
       parameters:
         - name: fileName
@@ -188,14 +195,14 @@ paths:
               format: binary
         required: true
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '400':
-          $ref: '#/components/responses/MimeTypeError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "400":
+          $ref: "#/components/responses/MimeTypeError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       tags:
         - assets
@@ -209,12 +216,70 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /posts/template:
+    get:
+      tags:
+        - posts
+      summary: Returns a template for new posts
+      description: Returns content of post-template.txt which can be used as a template for new post in case all posts have the same structure.
+      responses:
+        "200":
+          description: Post template
+          content:
+            text/html:
+              schema:
+                type: string
+                examples:
+                  - "<h1>title</h1>this is my template"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags:
+        - posts
+      summary: Updates template for new posts
+      description: Updates content of post-template.txt which can be used by calling /posts/template
+      requestBody:
+        description: New post template content
+        content:
+          text/html:
+            schema:
+              type: string
+        required: true
+      responses:
+        "201":
+          description: Successful operation
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /posts/excerpts:
+    get:
+      parameters:
+        - name: length
+          in: query
+          description: Max length of post excerpt
+          required: false
+          schema:
+            type: number
+      tags:
+        - posts
+      summary: Returns excerpts of all posts
+      description: Returns excerpts of all posts with post file name
+      responses:
+        "200":
+          $ref: "#/components/responses/PostExcerpts"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /posts:
     get:
       tags:
@@ -222,10 +287,10 @@ paths:
       summary: Gets list of posts
       description: Gets list of all stored posts names
       responses:
-        '200':
-          $ref: '#/components/responses/FileList'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "200":
+          $ref: "#/components/responses/FileList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
       tags:
         - posts
@@ -239,10 +304,10 @@ paths:
             schema:
               type: string
       responses:
-        '201':
-          $ref: '#/components/responses/CreatedAt'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "201":
+          $ref: "#/components/responses/CreatedAt"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /posts/{fileName}:
     get:
       parameters:
@@ -257,17 +322,18 @@ paths:
       summary: Returns post content
       description: Returns content by post file name
       responses:
-        '200':
+        "200":
           description: Stored post content
           content:
             text/html:
               schema:
                 type: string
-                example: "<h1>title</h1>this is my content"
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                examples:
+                  - "<h1>title</h1>this is my content"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     put:
       parameters:
         - name: fileName
@@ -288,12 +354,12 @@ paths:
               type: string
         required: true
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       tags:
         - posts
@@ -307,57 +373,12 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /posts/index/{index}:
-    get:
-      parameters:
-        - name: index
-          in: path
-          description: Index of post. May be negative to get the (n'th - 1) last post
-          required: true
-          schema:
-            type: number
-      tags:
-        - posts
-      summary: Returns post content
-      description: Returns content by post index
-      responses:
-        '200':
-          description: Stored post content
-          content:
-            text/html:
-              schema:
-                type: string
-                example: "<h1>title</h1>this is my content"
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /posts/excerpts:
-    get:
-      parameters:
-        - name: length
-          in: query
-          description: Max length of post excerpt
-          required: false
-          schema:
-            type: number
-      tags:
-        - posts
-      summary: Returns excerpts of all posts
-      description: Returns excerpts of all posts with post file name
-      responses:
-        '200':
-          $ref: '#/components/responses/PostExcerpts'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /structure:
     get:
       tags:
@@ -365,10 +386,10 @@ paths:
       summary: Gets list of structure files
       description: Gets list of all stored structure file names
       responses:
-        '200':
-          $ref: '#/components/responses/FileList'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "200":
+          $ref: "#/components/responses/FileList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /structure/{fileName}:
     get:
       parameters:
@@ -383,17 +404,18 @@ paths:
       summary: Returns structure file content
       description: Returns structure file content by file name
       responses:
-        '200':
+        "200":
           description: Stored structure file content
           content:
             text/html:
               schema:
                 type: string
-                example: "<h1>title</h1>this is my content"
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                examples:
+                  - "<h1>title</h1>this is my content"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     put:
       parameters:
         - name: fileName
@@ -414,12 +436,12 @@ paths:
               type: string
         required: true
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /export:
     post:
       tags:
@@ -427,10 +449,10 @@ paths:
       summary: Exports stashed changes
       description: Exports stashed changes to directory and synchronizes assets
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /preview:
     get:
       tags:
@@ -438,12 +460,13 @@ paths:
       summary: Shows preview of stashed changes
       description: Shows preview of stashed changes
       responses:
-        '200':
+        "200":
           description: Compiled HTML file
           content:
             text/html:
               schema:
                 type: string
-                example: "<h1>title</h1>this is my content"
-        '401':
-          $ref: '#/components/responses/Unauthorized' 
+                examples:
+                  - "<h1>title</h1>this is my content"
+        "401":
+          $ref: "#/components/responses/Unauthorized"

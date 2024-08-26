@@ -41,12 +41,13 @@ see [Swagger documentation](https://github.com/neon-JS/NanoBlog/blob/main/openap
 | `.same-page`       | `li`  | Identifies a link list item that would refer to the same page because the current page is the first/last one |
 
 ### Structure files
-| File name    | Description                                                    |
-|--------------|----------------------------------------------------------------|
-| _header.txt_ | Contains content of `<head>` tag, e.g. title, styles, metadata |
-| _intro.txt_  | Can contain a "welcome" text                                   |
-| _legal.txt_  | Can contain information about copyright, privacy policy etc.   |
-| _footer.txt_ | Can contain `<script>`s, footer etc.                           |
+| File name           | Description                                                                                                                   |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| _header.txt_        | Contains content of `<head>` tag, e.g. title, styles, metadata                                                                |
+| _intro.txt_         | Can contain a "welcome" text                                                                                                  |
+| _legal.txt_         | Can contain information about copyright, privacy policy etc.                                                                  |
+| _footer.txt_        | Can contain `<script>`s, footer etc.                                                                                          |
+| _post-template.txt_ | *May* contain a template for new posts, obtainable by _GET /api/posts/template_. **Not** included in the exported blog files. |
 
 ## Setup
 

@@ -9,3 +9,4 @@ _ReSharper.Caches/
 .DS_Store
 .vscode/
 *.Dot[sS]ettings.user
+global.json
