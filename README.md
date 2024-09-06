@@ -26,7 +26,7 @@ The resulting file will be exported into _Export/_.
   **Make sure to use a long and secure token! Also make sure that possible brute forcing is prevented by firewall, IPS and rate limiting!**
 
 ### API
-see [Swagger documentation](https://github.com/neon-JS/NanoBlog/blob/main/openapi.yaml)
+see [Swagger documentation](https://github.com/its-laika/NanoBlog/blob/main/openapi.yaml)
 
 ### CSS selectors
 | Selector           | Type  | Description                                                                                                  |
@@ -68,4 +68,4 @@ see [Swagger documentation](https://github.com/neon-JS/NanoBlog/blob/main/openap
 If you want to give me any relevant information to this project, feel free to either create an issue or write me a mail.
 
 ## License
-[MIT](https://github.com/neon-JS/NanoBlog/blob/main/LICENSE)
+[MIT](https://github.com/its-laika/NanoBlog/blob/main/LICENSE)

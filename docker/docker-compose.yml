@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   nanoblog:
-    image: ghcr.io/neon-js/nanoblog:latest
+    image: ghcr.io/its-laika/nanoblog:latest
     # Use this if you want to use your self built version.
     # build:
     #  context: ../NanoBlog

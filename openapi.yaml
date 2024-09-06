@@ -1,18 +1,16 @@
 openapi: 3.1.0
 info:
-  title: neon-js/NanoBlog
+  title: its-laika/NanoBlog
   description: |-
     A simplistic blogging system
     NanoBlog is a blogging system on file basis, therefore it doesn't use a database, scripting or cookies.
-  contact:
-    email: github+curly@likely.gay
   license:
     name: MIT
-    url: https://github.com/neon-JS/NanoBlog/blob/main/LICENSE
+    url: https://github.com/its-laika/NanoBlog/blob/main/LICENSE
   version: 0.0.14
 externalDocs:
   description: Github repository
-  url: https://github.com/neon-JS/NanoBlog
+  url: https://github.com/its-laika/NanoBlog
 servers:
   - url: http://localhost:5023/api/
 tags:

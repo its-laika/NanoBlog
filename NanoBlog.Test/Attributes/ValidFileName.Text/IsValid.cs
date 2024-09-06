@@ -20,7 +20,7 @@ public class IsValid
         sut.IsValid("__.txt").Should().BeFalse();
         sut.IsValid("/../../../etc/passwd.txt").Should().BeFalse();
         sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt").Should().BeFalse();
-        sut.IsValid("https://raw.githubusercontent.com/neon-JS/NanoBlog/main/src/BlogFiles/Structure/footer.txt")
+        sut.IsValid("https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt")
             .Should()
             .BeFalse();
         sut.IsValid("totally-harmless.exe").Should().BeFalse();

@@ -14,7 +14,7 @@ public class CreateFile
         Assert.Throws<ArgumentException>(() => directoryInfo.CreateFile("/etc/passwd.txt"));
         Assert.Throws<ArgumentException>(() => directoryInfo.CreateFile("🏳‍🌈🏳‍🌈🏳‍🌈.txt"));
         Assert.Throws<ArgumentException>(() => directoryInfo.CreateFile(
-            "https://raw.githubusercontent.com/neon-JS/NanoBlog/main/src/BlogFiles/Structure/footer.txt"
+            "https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt"
         ));
         Assert.Throws<ArgumentException>(() => directoryInfo.CreateFile("totally-harmless.exe"));
         Assert.Throws<ArgumentException>(() => directoryInfo.CreateFile("../test.txt"));
