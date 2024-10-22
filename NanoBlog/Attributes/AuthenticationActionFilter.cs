@@ -2,7 +2,7 @@ namespace NanoBlog.Attributes;
 
 public class AuthenticationActionFilter(string configuredAuthenticationToken) : IResourceFilter
 {
-    private const string _AUTHENTICATION_HEADER_BEARER_PREFIX = "Bearer ";
+    private const string AuthenticationHeaderBearerPrefix = "Bearer ";
 
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
@@ -13,13 +13,13 @@ public class AuthenticationActionFilter(string configuredAuthenticationToken) : 
             return;
         }
 
-        if (!token.StartsWith(_AUTHENTICATION_HEADER_BEARER_PREFIX, StringComparison.InvariantCultureIgnoreCase))
+        if (!token.StartsWith(AuthenticationHeaderBearerPrefix, StringComparison.InvariantCultureIgnoreCase))
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        var givenAuthenticationToken = token[_AUTHENTICATION_HEADER_BEARER_PREFIX.Length..].Trim();
+        var givenAuthenticationToken = token[AuthenticationHeaderBearerPrefix.Length..].Trim();
 
         if (string.IsNullOrEmpty(givenAuthenticationToken))
         {

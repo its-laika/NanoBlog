@@ -9,34 +9,4 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>7</WarningLevel>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Folder Include="BlogFiles\Assets" />
-        <Folder Include="BlogFiles\Posts\" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="BlogFiles\Posts">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Export">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="BlogFiles\Structure\header.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="BlogFiles\Structure\intro.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="BlogFiles\Structure\legal.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="BlogFiles\Structure\footer.txt">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Export\index.html">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
 </Project>

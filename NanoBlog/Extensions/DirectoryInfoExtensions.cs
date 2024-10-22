@@ -2,7 +2,7 @@ namespace NanoBlog.Extensions;
 
 public static class DirectoryInfoExtensions
 {
-    private const UnixFileMode _DIRECTORY_MODE =
+    private const UnixFileMode DirectoryMode =
         UnixFileMode.UserRead
         | UnixFileMode.UserWrite
         | UnixFileMode.UserExecute
@@ -16,15 +16,9 @@ public static class DirectoryInfoExtensions
         directoryInfo.Refresh();
 
         return directoryInfo
-           .EnumerateFiles()
-           .Where(f => f.Exists) /* this is possibly dumb */
-           .SingleOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
-    }
-
-    public static FileInfo FindFileInfo(this DirectoryInfo directoryInfo, string fileName)
-    {
-        return directoryInfo.TryFindFileInfo(fileName)
-            ?? throw new FileNotFoundException($"Could not find file {fileName}");
+            .EnumerateFiles()
+            .Where(f => f.Exists) /* this is possibly dumb */
+            .SingleOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCulture));
     }
 
     public static bool HasFile(this DirectoryInfo directoryInfo, string fileName)
@@ -61,15 +55,14 @@ public static class DirectoryInfoExtensions
 
     public static void Clear(
         this DirectoryInfo directoryInfo,
-        ICollection<string> keepNames,
-        StringComparer nameStringComparer
-    )
+        ICollection<string> fileNamesToIgnore,
+        StringComparer nameStringComparer)
     {
         directoryInfo.Refresh();
 
         foreach (var fileInfo in directoryInfo.EnumerateFiles())
         {
-            if (keepNames?.Contains(fileInfo.Name, nameStringComparer) == true)
+            if (fileNamesToIgnore?.Contains(fileInfo.Name, nameStringComparer) == true)
             {
                 continue;
             }
@@ -79,7 +72,7 @@ public static class DirectoryInfoExtensions
 
         foreach (var subDirectoryInfo in directoryInfo.EnumerateDirectories())
         {
-            if (keepNames?.Contains(subDirectoryInfo.Name, nameStringComparer) == true)
+            if (fileNamesToIgnore?.Contains(subDirectoryInfo.Name, nameStringComparer) == true)
             {
                 continue;
             }
@@ -97,9 +90,15 @@ public static class DirectoryInfoExtensions
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            directoryInfo.UnixFileMode = _DIRECTORY_MODE;
+            directoryInfo.UnixFileMode = DirectoryMode;
         }
 
         return directoryInfo;
+    }
+
+    private static FileInfo FindFileInfo(this DirectoryInfo directoryInfo, string fileName)
+    {
+        return directoryInfo.TryFindFileInfo(fileName)
+               ?? throw new FileNotFoundException($"Could not find file {fileName}");
     }
 }

@@ -1,6 +1,3 @@
-using NanoBlog.Containers;
-using NanoBlog.Extensions;
-
 namespace NanoBlog.Test.Services.MimeTypes.MimeTypeProvider;
 
 public class ProvideMimeTypeAsyncByFormFile
@@ -108,7 +105,7 @@ public class ProvideMimeTypeAsyncByFormFile
             headers[HeaderNames.ContentType] = new StringValues(mimeType);
         }
 
-        return new FormFile(new MemoryStream(Array.Empty<byte>()), 0, 0, fileName, fileName)
+        return new FormFile(new MemoryStream([]), 0, 0, fileName, fileName)
         {
             Headers = headers
         };

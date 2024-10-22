@@ -1,40 +1,75 @@
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace NanoBlog;
 
 public class Configuration : IConfiguration
 {
-    public bool UsePagination { get; init; } = IConfiguration.DEFAULT_USE_PAGINATION;
-    public int PageSize { get; init; } = IConfiguration.DEFAULT_PAGE_SIZE;
-    public string Language { get; init; } = IConfiguration.DEFAULT_LANGUAGE;
-    public string BlogRootServerDirectory { get; init; } = IConfiguration.DEFAULT_BLOG_ROOT_SERVER_DIRECTORY;
-    public ICollection<string> ExportKeepFileNames { get; } = new List<string>();
+    public string PagePlaceholderPosts { get; init; } = string.Empty;
+    public string PagePlaceholderNavigation { get; init; } = string.Empty;
+    public string PostPlaceholderContent { get; init; } = string.Empty;
+    public string PostPlaceholderName { get; init; } = string.Empty;
 
-    public static DirectoryInfo GetStageAssetsDirectoryInfo()
+    public bool UsePagination { get; init; } = false;
+    public string PageTemplate { get; init; } = string.Empty;
+    public string PostTemplate { get; init; } = string.Empty;
+    public int? PageSize { get; init; } = null;
+
+    public string PostDirectory { get; init; } = string.Empty;
+    public string AssetDirectory { get; init; } = string.Empty;
+
+    public string ExportDirectory { get; init; } = string.Empty;
+
+    public ICollection<string> KeepExportFiles { get; init; } = [];
+
+    public DirectoryInfo GetAssetsDirectoryInfo()
     {
-        return new DirectoryInfo(
-            Path.Combine(Directory.GetCurrentDirectory(), IConfiguration.STAGE_ASSETS_DIRECTORY_NAME)
-        );
+        EnsureNotEmpty(AssetDirectory);
+        return EnsureExisting(Path.Combine(Directory.GetCurrentDirectory(), AssetDirectory));
     }
 
-    public static DirectoryInfo GetStagePostsDirectoryInfo()
+    public DirectoryInfo GetPostsDirectoryInfo()
     {
-        return new DirectoryInfo(
-            Path.Combine(Directory.GetCurrentDirectory(), IConfiguration.STAGE_POSTS_DIRECTORY_NAME)
-        );
+        EnsureNotEmpty(PostDirectory);
+        return EnsureExisting(Path.Combine(Directory.GetCurrentDirectory(), PostDirectory));
     }
 
-    public static DirectoryInfo GetStageStructureDirectoryInfo()
+    public DirectoryInfo GetExportDirectoryInfo()
     {
-        return new DirectoryInfo(
-            Path.Combine(Directory.GetCurrentDirectory(), IConfiguration.STAGE_STRUCTURE_DIRECTORY_NAME)
-        );
+        EnsureNotEmpty(ExportDirectory);
+        return EnsureExisting(Path.Combine(Directory.GetCurrentDirectory(), ExportDirectory));
     }
 
-    public static DirectoryInfo GetExportDirectoryInfo()
+    public DirectoryInfo GetExportAssetsDirectoryInfo()
     {
-        return new DirectoryInfo(
-            Path.Combine(Directory.GetCurrentDirectory(), IConfiguration.EXPORT_DIRECTORY_NAME)
-        );
+        EnsureNotEmpty(ExportDirectory);
+        return EnsureExisting(Path.Combine(Directory.GetCurrentDirectory(), ExportDirectory, "assets"));
+    }
+
+    public DirectoryInfo GetExportArchiveDirectoryInfo()
+    {
+        EnsureNotEmpty(ExportDirectory);
+        return EnsureExisting(Path.Combine(Directory.GetCurrentDirectory(), ExportDirectory, "archive"));
+    }
+
+    private static DirectoryInfo EnsureExisting(string path)
+    {
+        var directoryInfo = new DirectoryInfo(path);
+
+        if (!directoryInfo.Exists)
+        {
+            directoryInfo.Create();
+        }
+
+        return directoryInfo.EnsureSecureMode();
+    }
+
+    private static void EnsureNotEmpty(string path)
+    {
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        throw new Exception("Path not configured");
     }
 }

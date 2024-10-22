@@ -2,70 +2,27 @@ namespace NanoBlog.Controllers;
 
 [ApiController]
 [Route("posts")]
-public class PostsController(
-    IStageDirectoryContainer stage,
-    ILogger<PostsController> logger,
-    IPostService postService
-) : ControllerBase
+public class PostsController(IConfiguration configuration, IPostService postService) : ControllerBase
 {
     [HttpGet]
-    public IActionResult GetFileNames()
+    public IActionResult GetPostFileNames()
     {
-        var fileNames = stage.PostsDirectory
-           .EnumerateFiles()
-           .Select(f => f.Name)
-           .OrderDescending();
+        var fileNames = configuration
+            .GetPostsDirectoryInfo()
+            .EnumerateFiles()
+            .Select(f => f.Name)
+            .OrderDescending();
 
         return Ok(fileNames);
     }
 
     [HttpGet("excerpts")]
-    public async Task<IActionResult> GetExcerptsAsync(
-        [FromQuery] int? length,
-        CancellationToken cancellationToken
-    )
+    public async Task<IActionResult> GetExcerptsAsync([FromQuery] int? length, CancellationToken cancellationToken)
     {
         return Ok(
             await postService.LoadExcerptsAsync(
-                length ?? IPostService.EXCERPT_LENGTH_DEFAULT,
-                cancellationToken
-            )
-        );
-    }
-
-    [HttpGet("template")]
-    public async Task<IActionResult> GetPostTemplateAsync(CancellationToken cancellationToken)
-    {
-        await using var fileStream = stage.StructureDirectory
-           .TryFindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE)?
-           .OpenRead();
-
-        if (fileStream is null)
-        {
-            return NotFound();
-        }
-
-        var content = await fileStream.LoadAsStringAsync(cancellationToken);
-        return Content(content, "text/html");
-    }
-
-    [HttpPut("template")]
-    public async Task<IActionResult> UpdatePostTemplateAsync(CancellationToken cancellationToken)
-    {
-        await using var fileStream = stage.StructureDirectory
-           .TryFindFileInfo(IConfiguration.STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE)?
-           .EnsureFileMode()
-           .OpenWriteStream();
-
-        if (fileStream is null)
-        {
-            return NotFound();
-        }
-
-        await Request.Body.CopyToAsync(fileStream, cancellationToken);
-
-        logger.LogInformation("Post template has been updated");
-        return NoContent();
+                length ?? IPostService.ExcerptLengthDefault,
+                cancellationToken));
     }
 
     [HttpPost]
@@ -73,22 +30,24 @@ public class PostsController(
     {
         var fileName = $"{DateTime.UtcNow.Ticks}-{Guid.NewGuid()}.txt";
 
-        await using var fileStream = stage.PostsDirectory.CreateFile(fileName);
+        await using var fileStream = configuration
+            .GetPostsDirectoryInfo()
+            .CreateFile(fileName);
+
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        logger.LogInformation("Post {fileName} has been created", fileName);
-        return CreatedAtAction("GetFileContent", new { fileName }, null);
+        return CreatedAtAction("GetPost", new { fileName }, null);
     }
 
     [HttpGet("{fileName}")]
-    public async Task<IActionResult> GetFileContentAsync(
+    public async Task<IActionResult> GetPostAsync(
         [ValidFileName.Text] string fileName,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
-        await using var fileStream = stage.PostsDirectory
-           .TryFindFileInfo(fileName)?
-           .OpenRead();
+        await using var fileStream = configuration
+            .GetPostsDirectoryInfo()
+            .TryFindFileInfo(fileName)?
+            .OpenRead();
 
         if (fileStream is null)
         {
@@ -101,15 +60,16 @@ public class PostsController(
     }
 
     [HttpPut("{fileName}")]
-    public async Task<IActionResult> UpdateFileContentAsync(
+    public async Task<IActionResult> UpdatePostAsync(
         [ValidFileName.Text] string fileName,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
-        await using var fileStream = stage.PostsDirectory
-           .TryFindFileInfo(fileName)?
-           .EnsureFileMode()
-           .OpenWriteStream();
+        if (fileName.Equals("laika.txt", StringComparison.InvariantCulture)) { return BadRequest("...didn't you mean to PAT? :3"); }
+        await using var fileStream = configuration
+            .GetPostsDirectoryInfo()
+            .TryFindFileInfo(fileName)?
+            .EnsureFileMode()
+            .OpenWriteStream();
 
         if (fileStream is null)
         {
@@ -118,21 +78,21 @@ public class PostsController(
 
         await Request.Body.CopyToAsync(fileStream, cancellationToken);
 
-        logger.LogInformation("Post {fileName} has been updated", fileName);
         return NoContent();
     }
 
     [HttpDelete("{fileName}")]
-    public IActionResult DeleteFileAsync([ValidFileName.Text] string fileName)
+    public IActionResult DeletePostAsync([ValidFileName.Text] string fileName)
     {
-        if (!stage.PostsDirectory.HasFile(fileName))
+        var postsDirectoryInfo = configuration.GetPostsDirectoryInfo();
+
+        if (!postsDirectoryInfo.HasFile(fileName))
         {
             return NotFound();
         }
 
-        stage.PostsDirectory.DeleteFile(fileName);
+        postsDirectoryInfo.DeleteFile(fileName);
 
-        logger.LogInformation("Post {fileName} has been deleted", fileName);
         return NoContent();
     }
 }

@@ -2,7 +2,7 @@ namespace NanoBlog.Extensions;
 
 public static class FileInfoExtensions
 {
-    private const UnixFileMode _FILE_MODE =
+    private const UnixFileMode FileMode =
         UnixFileMode.UserRead
         | UnixFileMode.UserWrite
         | UnixFileMode.GroupRead
@@ -12,7 +12,7 @@ public static class FileInfoExtensions
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            fileInfo.UnixFileMode = _FILE_MODE;
+            fileInfo.UnixFileMode = FileMode;
         }
 
         return fileInfo;
@@ -24,6 +24,6 @@ public static class FileInfoExtensions
     /// </summary>
     public static FileStream OpenWriteStream(this FileInfo fileInfo)
     {
-        return fileInfo.Open(FileMode.Truncate, FileAccess.Write);
+        return fileInfo.Open(System.IO.FileMode.Truncate, FileAccess.Write);
     }
 }
