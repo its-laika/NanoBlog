@@ -3,7 +3,8 @@
 # If you want to use docker without compose, you may copy this file into the .NET project root.
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
+
+EXPOSE 8080
 
 RUN adduser --disabled-password --home /app --gecos '' dotnetuser && chown -R dotnetuser /app
 USER dotnetuser
@@ -27,5 +28,10 @@ RUN dotnet publish "NanoBlog.csproj" -c Release -o /app/publish -a $TARGETARCH /
 
 FROM base AS final
 WORKDIR /app
+
 COPY --from=publish /app/publish .
+
+RUN mkdir -p data data/posts data/assets data/export
+ENV PostDirectory=/app/data/posts AssetDirectory=/app/data/assets ExportDirectory=/app/data/export
+
 ENTRYPOINT ["dotnet", "NanoBlog.dll"]

@@ -18,7 +18,7 @@ public partial class ValidFileName : ValidationAttribute
     [GeneratedRegex(@"^[A-Za-z0-9\-]+\.(png|jpg|jpeg|gif|svg|txt|html)")]
     private static partial Regex AllRegex();
 
-    private const int _MAX_FILE_LENGTH = 100;
+    private const int MaxFileLength = 100;
     private readonly Regex _validFileNameRegex;
 
     private ValidFileName(Regex validFileNameRegex)
@@ -33,9 +33,9 @@ public partial class ValidFileName : ValidationAttribute
             return new ValidationResult($"Attributed value is not of type {typeof(string)}");
         }
 
-        if (fileName.Length > _MAX_FILE_LENGTH)
+        if (fileName.Length > MaxFileLength)
         {
-            return new ValidationResult($"File name exceeded max length ({_MAX_FILE_LENGTH}).");
+            return new ValidationResult($"File name exceeded max length ({MaxFileLength}).");
         }
 
         return _validFileNameRegex.IsMatch(fileName)

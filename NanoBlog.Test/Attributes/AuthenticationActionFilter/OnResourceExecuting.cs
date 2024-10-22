@@ -113,8 +113,8 @@ public class OnActionExecuting
                 RouteData = new RouteData(),
                 ActionDescriptor = new ActionDescriptor()
             },
-            new List<IFilterMetadata>(),
-            new List<IValueProviderFactory>()
+            [],
+            []
         );
 
         return actionExecutedContext;

@@ -2,31 +2,21 @@ namespace NanoBlog;
 
 public interface IConfiguration
 {
-    /* for simplicity reasons, those values are not configurable itself */
-    public const string INDEX_FILE_NAME = "index.html";
-    public const string ASSETS_DIRECTORY_NAME = "assets";
-    public const string ARCHIVE_DIRECTORY_NAME = "archive";
-    public const string ARCHIVE_INDEX_FORMAT = "D";
+    public DirectoryInfo GetAssetsDirectoryInfo();
+    public DirectoryInfo GetPostsDirectoryInfo();
 
-    public const string STAGE_STRUCTURE_FILE_NAME_HEADER = "header.txt";
-    public const string STAGE_STRUCTURE_FILE_NAME_INTRO = "intro.txt";
-    public const string STAGE_STRUCTURE_FILE_NAME_LEGAL = "legal.txt";
-    public const string STAGE_STRUCTURE_FILE_NAME_FOOTER = "footer.txt";
-    public const string STAGE_STRUCTURE_FILE_NAME_POST_TEMPLATE = "post-template.txt";
+    public DirectoryInfo GetExportDirectoryInfo();
+    public DirectoryInfo GetExportAssetsDirectoryInfo();
+    public DirectoryInfo GetExportArchiveDirectoryInfo();
 
-    protected const string STAGE_ASSETS_DIRECTORY_NAME = "BlogFiles/Assets";
-    protected const string STAGE_POSTS_DIRECTORY_NAME = "BlogFiles/Posts";
-    protected const string STAGE_STRUCTURE_DIRECTORY_NAME = "BlogFiles/Structure";
-    protected const string EXPORT_DIRECTORY_NAME = "Export";
+    public string PagePlaceholderPosts { get; }
+    public string PagePlaceholderNavigation { get; }
+    public string PostPlaceholderContent { get; }
+    public string PostPlaceholderName { get; }
 
-    protected const string DEFAULT_LANGUAGE = "en";
-    protected const string DEFAULT_BLOG_ROOT_SERVER_DIRECTORY = "/";
-    protected const bool DEFAULT_USE_PAGINATION = false;
-    protected const int DEFAULT_PAGE_SIZE = 0;
+    public string PageTemplate { get; }
+    public string PostTemplate { get; }
+    public int? PageSize { get; }
 
-    public bool UsePagination { get; }
-    public int PageSize { get; }
-    public string Language { get; }
-    public string BlogRootServerDirectory { get; }
-    public ICollection<string> ExportKeepFileNames { get; }
+    public ICollection<string> KeepExportFiles { get; }
 }

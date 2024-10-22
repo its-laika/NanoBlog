@@ -10,3 +10,6 @@ _ReSharper.Caches/
 .vscode/
 *.Dot[sS]ettings.user
 global.json
+blog-files/
+blog-export/
+docker/data/*
