@@ -81,7 +81,7 @@ public class BlogGenerator(IConfiguration configuration) : IBlogGenerator
         {
             navigation.Append(@$"
                 <li id='nav-following-page'>
-                    <a href='{pageNumber + 1}'>{pageNumber + 2}</a>
+                    <a href='../{pageNumber + 1}'>{pageNumber + 2}</a>
                 </li>");
         }
 
@@ -101,7 +101,7 @@ public class BlogGenerator(IConfiguration configuration) : IBlogGenerator
         {
             navigation.Append(@$"
                 <li id='nav-previous-page'>
-                    <a href='{pageNumber - 1}'>{pageNumber}</a>
+                    <a href='../{pageNumber - 1}'>{pageNumber}</a>
                 </li>");
         }
 
