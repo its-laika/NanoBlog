@@ -13,6 +13,8 @@ public interface IConfiguration
     public string PagePlaceholderNavigation { get; }
     public string PostPlaceholderContent { get; }
     public string PostPlaceholderName { get; }
+    public string PostPlaceholderDate { get; }
+    public string PostDateFormat { get; }
 
     public string PageTemplate { get; }
     public string PostTemplate { get; }

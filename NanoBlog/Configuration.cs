@@ -8,6 +8,8 @@ public class Configuration : IConfiguration
     public string PagePlaceholderNavigation { get; init; } = string.Empty;
     public string PostPlaceholderContent { get; init; } = string.Empty;
     public string PostPlaceholderName { get; init; } = string.Empty;
+    public string PostPlaceholderDate { get; init; } = string.Empty;
+    public string PostDateFormat { get; init; } = string.Empty;
 
     public bool UsePagination { get; init; } = false;
     public string PageTemplate { get; init; } = string.Empty;

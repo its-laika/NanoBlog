@@ -21,6 +21,8 @@ Updating the blog works as following:
   "PostTemplate": "<div class='post' id='{NAME}'>{CONTENT}</div>", // Template for a single post (of a page)
   "PostPlaceholderContent": "{CONTENT}", // Placeholder that can be used in PostTemplate to determine, where the post content will be
   "PostPlaceholderName": "{NAME}", // Placeholder that can be used in PostTemplate to determine, where the post file name content will be (Use for e. g. html ids)
+  "PostPlaceholderDate": "{DATE}", // Placeholder that can be used in PostTemplate to determine, where the creation date (based on file name prefix) will be
+  "PostDateFormat": "yyyy-MM-dd HH:mm K", // Format of the date that is in "PostPlaceholderDate"
   "UsePagination": true, // Determine whether pagination should be in use
   "PageSize": 20, // If UsePagination is true, determines how many posts will be included in a single page
   "PostDirectory": "blog-files/posts", // Determines where the posts should be stored / read from

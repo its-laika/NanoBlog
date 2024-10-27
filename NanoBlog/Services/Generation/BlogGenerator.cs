@@ -1,7 +1,10 @@
 namespace NanoBlog.Services.Generation;
 
-public class BlogGenerator(IConfiguration configuration) : IBlogGenerator
+public partial class BlogGenerator(IConfiguration configuration) : IBlogGenerator
 {
+    [GeneratedRegex(@"^(\d{18})-.*$")]
+    private static partial Regex TicksFromFileNameRegex();
+
     public async Task<IList<MemoryStream>> GeneratePageContentsAsync(CancellationToken cancellationToken)
     {
         var allPosts = await PreparePostsAsync(cancellationToken);
@@ -53,8 +56,13 @@ public class BlogGenerator(IConfiguration configuration) : IBlogGenerator
                         return string.Empty;
                     }
 
+                    var replacementDate = TryExtract(fileInfo) is { } postDate
+                        ? postDate.ToString(configuration.PostDateFormat)
+                        : string.Empty;
+
                     return configuration
                         .PostTemplate
+                        .Replace(configuration.PostPlaceholderDate, replacementDate)
                         .Replace(configuration.PostPlaceholderName, fileInfo.Name)
                         .Replace(configuration.PostPlaceholderContent, content);
                 })
@@ -108,5 +116,18 @@ public class BlogGenerator(IConfiguration configuration) : IBlogGenerator
         navigation.Append("</ul></nav>");
 
         return navigation.ToString();
+    }
+
+    private static DateTime? TryExtract(FileInfo fileInfo)
+    {
+        var match = TicksFromFileNameRegex().Match(fileInfo.Name);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        var ticks = (long)Convert.ToDouble(match.Groups[1].Value);
+
+        return new DateTime(ticks, DateTimeKind.Utc);
     }
 }
