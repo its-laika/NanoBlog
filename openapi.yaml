@@ -8,7 +8,7 @@ info:
   license:
     name: MIT
     url: https://github.com/its-laika/NanoBlog/blob/main/LICENSE
-  version: 0.2.0
+  version: 0.2.1
 externalDocs:
   description: Github repository
   url: https://github.com/its-laika/NanoBlog

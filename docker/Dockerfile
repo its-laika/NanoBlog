@@ -1,7 +1,7 @@
 ﻿# This Dockerfile only works in .NET project root (../NanoBlog) 
 # As `docker compose` can handle this and for reasons of cleanliness, it's located in this subfolder.
 # If you want to use docker without compose, you may copy this file into the .NET project root.
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 
 EXPOSE 8080
@@ -9,7 +9,7 @@ EXPOSE 8080
 RUN adduser --disabled-password --home /app --gecos '' dotnetuser && chown -R dotnetuser /app
 USER dotnetuser
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 ARG TARGETARCH
