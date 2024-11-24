@@ -40,7 +40,7 @@ public class AssetsController(IConfiguration configuration, IMimeTypeProvider mi
 
         await content.CopyToAsync(fileStream, cancellationToken);
 
-        return CreatedAtAction("GetAssetContent", new { fileName }, null);
+        return CreatedAtAction("GetAsset", new { fileName }, null);
     }
 
     [HttpGet("{fileName}")]
