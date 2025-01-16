@@ -12,7 +12,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().Be(MimeType.Gif);
+        Assert.Equal(MimeType.Gif, result);
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().Be(MimeType.Gif);
+        Assert.Equal(MimeType.Gif, result);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().Be(MimeType.Gif);
+        Assert.Equal(MimeType.Gif, result);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class ProvideMimeTypeAsyncByFormFile
 
         var result = await sut.ProvideMimeTypeAsync(formFile, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     private static IFormFile BuildFormFile(string fileName, string? mimeType)

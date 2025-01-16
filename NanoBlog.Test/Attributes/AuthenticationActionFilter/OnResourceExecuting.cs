@@ -12,7 +12,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeNull();
+        Assert.Null(context.Result);
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeNull();
+        Assert.Null(context.Result);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeNull();
+        Assert.Null(context.Result);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class OnActionExecuting
 
         sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class OnActionExecuting
 
         _sut.OnResourceExecuting(context);
 
-        context.Result.Should().BeOfType<UnauthorizedResult>();
+        Assert.IsType<UnauthorizedResult>(context.Result);
     }
 
     private static ResourceExecutingContext BuildContext(string? authenticationToken)

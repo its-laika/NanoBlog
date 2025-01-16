@@ -7,11 +7,11 @@ public class IsValid
     {
         var sut = new NanoBlog.Attributes.ValidFileName.Asset();
 
-        sut.IsValid("a-normal-file.png").Should().BeTrue();
-        sut.IsValid("a-normal-file.jpg").Should().BeTrue();
-        sut.IsValid("a-normal-file.jpeg").Should().BeTrue();
-        sut.IsValid("a-normal-file.gif").Should().BeTrue();
-        sut.IsValid("a-normal-file.svg").Should().BeTrue();
+        Assert.True(sut.IsValid("a-normal-file.png"));
+        Assert.True(sut.IsValid("a-normal-file.jpg"));
+        Assert.True(sut.IsValid("a-normal-file.jpeg"));
+        Assert.True(sut.IsValid("a-normal-file.gif"));
+        Assert.True(sut.IsValid("a-normal-file.svg"));
     }
 
     [Fact]
@@ -19,20 +19,18 @@ public class IsValid
     {
         var sut = new NanoBlog.Attributes.ValidFileName.Asset();
 
-        sut.IsValid("a-normal-file.txt").Should().BeFalse();
-        sut.IsValid("a-normal-file.jfif").Should().BeFalse();
+        Assert.False(sut.IsValid("a-normal-file.txt"));
+        Assert.False(sut.IsValid("a-normal-file.jfif"));
 
-        sut.IsValid("What\tare whitespaces anyway?.txt").Should().BeFalse();
-        sut.IsValid("__.txt").Should().BeFalse();
-        sut.IsValid("/../../../etc/passwd.txt").Should().BeFalse();
-        sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt").Should().BeFalse();
-        sut.IsValid("https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt")
-           .Should()
-           .BeFalse();
-        sut.IsValid("totally-harmless.exe").Should().BeFalse();
-        sut.IsValid("a-normal-file.").Should().BeFalse();
-        sut.IsValid("~/test.txt").Should().BeFalse();
-        sut.IsValid("~.txt").Should().BeFalse(); /* avoid confusion */
+        Assert.False(sut.IsValid("What\tare whitespaces anyway?.txt"));
+        Assert.False(sut.IsValid("__.txt"));
+        Assert.False(sut.IsValid("/../../../etc/passwd.txt"));
+        Assert.False(sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt"));
+        Assert.False(sut.IsValid("https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt"));
+        Assert.False(sut.IsValid("totally-harmless.exe"));
+        Assert.False(sut.IsValid("a-normal-file."));
+        Assert.False(sut.IsValid("~/test.txt"));
+        Assert.False(sut.IsValid("~.txt")); /* avoid confusion */
     }
 
     [Fact]
@@ -50,7 +48,7 @@ public class IsValid
         var invalidFileName = 'A' + stringBuilder.ToString();
 
         var sut = new NanoBlog.Attributes.ValidFileName.Asset();
-        sut.IsValid(validFileName).Should().BeTrue();
-        sut.IsValid(invalidFileName).Should().BeFalse();
+        Assert.True(sut.IsValid(validFileName));
+        Assert.False(sut.IsValid(invalidFileName));
     }
 }

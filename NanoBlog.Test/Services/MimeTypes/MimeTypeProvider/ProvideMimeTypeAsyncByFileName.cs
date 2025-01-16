@@ -11,7 +11,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
 
-        result.Should().Be(MimeType.Gif);
+        Assert.Equal(MimeType.Gif, result);
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class ProvideMimeTypeAsyncByFileName
 
         var result = await sut.ProvideMimeTypeAsync(fileName, fileStream, CancellationToken.None);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -69,9 +69,9 @@ public class ProvideMimeTypeAsyncByFileName
         var sut = new NanoBlog.Services.MimeTypes.MimeTypeProvider();
 
         var resultJpg = await sut.ProvideMimeTypeAsync("test.jpg", fileStream, CancellationToken.None);
-        resultJpg.Should().Be(MimeType.Jpeg);
+        Assert.Equal(MimeType.Jpeg, resultJpg);
 
         var resultJpeg = await sut.ProvideMimeTypeAsync("test.jpeg", fileStream, CancellationToken.None);
-        resultJpeg.Should().Be(MimeType.Jpeg);
+        Assert.Equal(MimeType.Jpeg, resultJpeg);
     }
 }

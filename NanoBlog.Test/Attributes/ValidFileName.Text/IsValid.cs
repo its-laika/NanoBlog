@@ -7,8 +7,8 @@ public class IsValid
     {
         var sut = new NanoBlog.Attributes.ValidFileName.Text();
 
-        sut.IsValid("a-normal-file.txt").Should().BeTrue();
-        sut.IsValid("THIS-is--1-tEsT.txt").Should().BeTrue();
+        Assert.True(sut.IsValid("a-normal-file.txt"));
+        Assert.True(sut.IsValid("THIS-is--1-tEsT.txt"));
     }
 
     [Fact]
@@ -16,17 +16,15 @@ public class IsValid
     {
         var sut = new NanoBlog.Attributes.ValidFileName.Text();
 
-        sut.IsValid("What\tare whitespaces anyway?.txt").Should().BeFalse();
-        sut.IsValid("__.txt").Should().BeFalse();
-        sut.IsValid("/../../../etc/passwd.txt").Should().BeFalse();
-        sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt").Should().BeFalse();
-        sut.IsValid("https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt")
-            .Should()
-            .BeFalse();
-        sut.IsValid("totally-harmless.exe").Should().BeFalse();
-        sut.IsValid("a-normal-file.").Should().BeFalse();
-        sut.IsValid("~/test.txt").Should().BeFalse();
-        sut.IsValid("~.txt").Should().BeFalse(); /* avoid confusion */
+        Assert.False(sut.IsValid("What\tare whitespaces anyway?.txt"));
+        Assert.False(sut.IsValid("__.txt"));
+        Assert.False(sut.IsValid("/../../../etc/passwd.txt"));
+        Assert.False(sut.IsValid("🏳‍🌈🏳‍🌈🏳‍🌈.txt"));
+        Assert.False(sut.IsValid("https://raw.githubusercontent.com/its-laika/NanoBlog/main/src/BlogFiles/Structure/footer.txt"));
+        Assert.False(sut.IsValid("totally-harmless.exe"));
+        Assert.False(sut.IsValid("a-normal-file."));
+        Assert.False(sut.IsValid("~/test.txt"));
+        Assert.False(sut.IsValid("~.txt")); /* avoid confusion */
     }
 
     [Fact]
@@ -44,7 +42,7 @@ public class IsValid
         var invalidFileName = 'A' + stringBuilder.ToString();
 
         var sut = new NanoBlog.Attributes.ValidFileName.Text();
-        sut.IsValid(validFileName).Should().BeTrue();
-        sut.IsValid(invalidFileName).Should().BeFalse();
+        Assert.True(sut.IsValid(validFileName));
+        Assert.False(sut.IsValid(invalidFileName));
     }
 }
