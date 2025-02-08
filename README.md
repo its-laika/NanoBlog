@@ -1,3 +1,6 @@
+> [!WARNING]  
+> This project has been archived and doesn't receive any updates.
+
 # NanoBlog
 A simplistic blogging system
 
